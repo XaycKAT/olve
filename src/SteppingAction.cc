@@ -7,7 +7,6 @@
 #include "G4Step.hh"
 #include "G4RunManager.hh"
 using namespace std;
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 SteppingAction::SteppingAction(
                       const DetectorConstruction* detectorConstruction,
@@ -18,13 +17,11 @@ SteppingAction::SteppingAction(
 {
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 SteppingAction::~SteppingAction()
 { 
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void SteppingAction::UserSteppingAction(const G4Step* step)
 {
@@ -74,4 +71,3 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
   }*/
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

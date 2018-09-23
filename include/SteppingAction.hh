@@ -26,6 +26,5 @@ private:
   EventAction*  fEventAction;  
 };
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 #endif

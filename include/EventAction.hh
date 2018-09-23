@@ -35,8 +35,6 @@ class EventAction : public G4UserEventAction, public DetectorConstruction
     EventAction();
     void SetSize ( int sizeDet );
     G4double *plasEnergy = nullptr;
-    //G4double plasEnergy[30];
-    //vector<G4double> plasEnergy(30);
     virtual ~EventAction();
 
     virtual void  BeginOfEventAction(const G4Event* event);
@@ -66,7 +64,6 @@ inline void EventAction::SetPrintModulo(G4int value) {
   fPrintModulo = value;
 }
                      
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 #endif
 

@@ -49,11 +49,9 @@
        fMagField(0),
        fCheckOverlaps(true)
     {
-      // Define /B4/det commands using generic messenger class
       fMessenger
         = new G4GenericMessenger(this, "/B4/det/", "Detector construction control");
 
-      // Define /B4/det/setMagField command
       G4GenericMessenger::Command& setMagFieldCmd
         = fMessenger->DeclareMethod("setMagField",
                                     &DetectorConstruction::SetMagField,

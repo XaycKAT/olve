@@ -16,7 +16,6 @@
 #include <vector>
 
 using namespace std;
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 EventAction::EventAction()
  : G4UserEventAction(),
@@ -27,10 +26,8 @@ EventAction::EventAction()
    fTrackLPlas(0.),
    fPrintModulo(1)
 {
-            // Define /B4/event commands using generic messenger class
   fMessenger = new G4GenericMessenger(this, "/Olve/event/", "Event control");
 
-  // Define /B4/event/setPrintModulo command
   G4GenericMessenger::Command& setPrintModulo 
     = fMessenger->DeclareProperty("setPrintModulo", 
                                   fPrintModulo, 
@@ -85,4 +82,3 @@ EventAction::~EventAction()
       }
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
