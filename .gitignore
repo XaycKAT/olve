@@ -1,0 +1,10 @@
+olve.exe
+other/
+project/
+CMakeFiles/
+CMakeLists.txt.user
+position.dat
+spectrum.dat
+CMakeCach.txt
+cmake_install.cmake
+Makefile
