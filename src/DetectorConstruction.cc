@@ -111,8 +111,8 @@
       G4double numSide = 6;	//шестигран призма
       //wolfram
       int numZPlanesWolf=6;
-      G4double wolfOut=19.1/2*mm;   //внешний радиус вольфр призмы
-      G4double wolfIn=19.1/2*mm;    //внутр радиус
+      G4double wolfOut=19.11/2.*mm;   //внешний радиус вольфр призмы
+      G4double wolfIn=19.1/2.*mm;    //внутр радиус
       G4double wolfLength=20*mm;	//длина призмы
       G4double wolfLengthF=2*mm;	//выступающий слой
       G4double fullWolfLength=wolfLength+wolfLengthF;
@@ -131,29 +131,43 @@
 
       //cell
       G4int nofCell=3;// кол-во ячеек в главной линии
-      int nofLayers=3; //количество слоев ячеек
+      int nofCellLayers=3; //количество слоев ячеек
       int sideL=(nofCell+1)/2. ;
       int numZPlanesCell=2;
       G4double cellOut=wolfOut; G4double cellIn=0;
+
       G4double rcellIn[numZPlanesCell] = { cellIn, cellIn};
       G4double rcellOut[numZPlanesCell] = { cellOut, cellOut};
       G4double zPlaneCell[numZPlanesCell] = { 0,fullWolfLengthF};
       G4double cellR=23.1*mm;
+      G4RotationMatrix* zRot = new G4RotationMatrix; // Rotates X and Z axes only
+      zRot->rotateZ(M_PI/6.*rad);
+      G4double centerCells=(nofCell/2.-1/2.)*plasOut*2;
 
+      //Pad
+      G4double padSizeX=10*mm;
+      G4double padSizeZ=10*mm;
+      G4double padThick=1*mm;
+      G4double padStep=1*cm;
+      int nofPadY=4;
+      G4double padOutStep=2*cm;
+      G4double nofPadX= nofCell*2*wolfOut/padSizeX-1;
+      G4double nofPadZ=nofCellLayers*fullWolfLengthF/padSizeZ-1;
       //silicon
-      int numZPlanesSilic=6;
+   /*   int numZPlanesSilic=6;
       G4double silicThick=0.1*cm;
       G4double silicRange=1*cm;
       G4double silicOut=plasOut*nofCell+silicRange;
       G4double silicIn=silicOut-silicThick;
       G4double silicLength=wolfLength;	//длина призмы
       G4double silicLengthF=2*mm;	//выступающий слой
-      G4double fullSilicLength=silicLength*nofLayers+silicLengthF*nofLayers+(nofLayers-1)*silicLengthF;
-      G4double fullSilicLengthF=silicLength*nofLayers+2*silicLengthF*nofLayers;
+      G4double fullSilicLength=silicLength*nofCellLayers+silicLengthF*nofCellLayers+(nofCellLayers-1)*silicLengthF;
+      G4double fullSilicLengthF=silicLength*nofCellLayers+2*silicLengthF*nofCellLayers;
       G4double rsilicIn[numZPlanesSilic] = { 0,0,silicIn,silicIn,0,0};
       G4double rsilicOut[numZPlanesSilic] = { silicOut, silicOut,silicOut,silicOut, silicOut, silicOut};
       G4double zPlaneSilic[numZPlanesSilic] = { 0,silicLengthF,silicLengthF,
-                                                fullSilicLength+2*silicRange,fullSilicLength+2*silicRange,fullSilicLengthF+2*silicRange};
+                                                fullSilicLength+2*silicRange,fullSilicLength+2*silicRange,fullSilicLengthF+2*silicRange};*/
+
 
       // Get materials
       G4Material* defaultMaterial = G4Material::GetMaterial("Galactic");
@@ -196,8 +210,7 @@
       //
       // Cell
       //
-      G4RotationMatrix* zRot = new G4RotationMatrix; // Rotates X and Z axes only
-      zRot->rotateZ(M_PI/6.*rad);
+
 
       G4Polyhedra* cell
         = new G4Polyhedra("cell",
@@ -262,22 +275,22 @@
 
 
         // Define one layer as one assembly volume
-        G4AssemblyVolume* assemblyDetector = new G4AssemblyVolume();
+        G4AssemblyVolume* assemblyCell = new G4AssemblyVolume();
         // Rotation and translation of a plate inside the assembly
         G4RotationMatrix Ra;
-        G4ThreeVector Ta, Ta1;
-        G4Transform3D Tr, Tr1;
+        G4ThreeVector Ta;
+        G4Transform3D Tr;
         // Rotation of the assembly inside the world
-        G4RotationMatrix Rm, Rm1;
+        G4RotationMatrix Rm;
 
         // Fill the assembly by the plates
-        assemblyDetector->AddPlacedVolume( cellLV, Tr );
+        assemblyCell->AddPlacedVolume( cellLV, Tr );
 
         int check=0;
       // создание массива ячеек в форме правильной призмы
       ofstream file("position.dat");
 
-      for( unsigned int j = 0; j < nofLayers; j++ )
+      for( unsigned int j = 0; j < nofCellLayers; j++ )
       {
         for(  int k = -sideL+1; k < sideL; k++ )
         {
@@ -286,7 +299,7 @@
             // Translation of the assembly inside the world
             G4ThreeVector Tm( i*(0 + 2*wolfOut) + abs(k)*wolfOut, k*3*wolfOut/sqrt(3),j*(0 + fullWolfLengthF));
             Tr = G4Transform3D(Rm,Tm);
-            assemblyDetector->MakeImprint( worldLV, Tr );
+            assemblyCell->MakeImprint( worldLV, Tr );
             file << check <<'\t'<<setprecision(4)<< Tm <<endl;
             check++;
             }
@@ -297,7 +310,7 @@
       cout<<check<<endl;
       sizeDet=check;
 
-      G4Polyhedra* Silic
+   /*   G4Polyhedra* Silic
         = new G4Polyhedra("Silic",            // its name
                      phiStart,phiTotal, numSide, numZPlanesSilic,  zPlaneSilic, rsilicIn, rsilicOut ); // its size
 
@@ -312,17 +325,60 @@
       G4VPhysicalVolume* silicPV
         = new G4PVPlacement(
                      zRot,                // no rotation
-                     G4ThreeVector((nofCell/2.-1/2.)*plasOut*2,0, -silicRange), // its position
+                     G4ThreeVector(centerCells,0, -silicRange), // its position
                      silicLV,       // its logical volume
                      "silicPV",           // its name
                      worldLV,          // its mother  volume
                      false,            // no boolean operation
                      0,fCheckOverlaps);             // copy number */
 
+      G4Box* siPlate=new G4Box("siPlate", 30*cm,30*cm,30*cm);
+      G4LogicalVolume* siPlateLV=new G4LogicalVolume(siPlate, siliconMat, "siPlateLV");
 
+      G4Box* siPad= new G4Box("siPad",           // its name
+                     padThick, padSizeX, padSizeX); // its size
 
+      G4LogicalVolume* siPadLV
+        = new G4LogicalVolume(
+                     siPad,           // its solid
+                     defaultMaterial,  // its material
+                     "siPadLV");         // its name
 
+      G4VPhysicalVolume* siPadPV
+        = new G4PVPlacement(
+                     0,                // no rotation
+                     G4ThreeVector(),  // at (0,0,0)
+                     siPadLV,          // its logical volume
+                     "siPadPV",          // its name
+                     siPlateLV,                // its mother  volume
+                     false,            // no boolean operation
+                     0,                // copy number
+                     fCheckOverlaps);  // checking overlaps
+      G4AssemblyVolume* assemblyPlate = new G4AssemblyVolume();
 
+      for( int j=0; j < nofPadX; j++)
+      {
+
+          for( unsigned int i = 0; i < nofPadY; i++ )
+          {
+              for(int k=0; k < nofPadZ; k++)
+              {
+                  // Translation of the assembly inside the world
+                  G4ThreeVector Tm( j*padSizeX,i*padStep,k*padSizeZ);
+
+                  G4RotationMatrix* zRot = new G4RotationMatrix;
+                  zRot->rotateZ(M_PI/2.*rad);
+                  Rm=zRot->invert();
+                  Tr = G4Transform3D(Rm,Tm);
+                  assemblyPlate->AddPlacedVolume( siPadLV, Tr );
+              }
+          }
+      }
+      //G4ThreeVector Tm( centerCells-(nofCell/2+1)*wolfOut+wolfOut+2*j*wolfOut,(i+nofCell-0.5)*wolfOut+padThick+padOutStep,padSize+k*fullWolfLengthF);
+      G4ThreeVector Tm(0,0,0);
+      G4RotationMatrix Rm1;
+      Tr=G4Transform3D(Rm1,Tm);
+      assemblyPlate->MakeImprint(worldLV, Tr);
       worldLV->SetVisAttributes(G4VisAttributes::Invisible);
 
       G4VisAttributes* plasColour= new G4VisAttributes(G4Colour(0,1.0,0));
