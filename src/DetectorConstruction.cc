@@ -111,7 +111,7 @@
       G4double numSide = 6;	//шестигран призма
       //wolfram
       int numZPlanesWolf=6;
-      G4double wolfOut=19.11/2.*mm;   //внешний радиус вольфр призмы
+      G4double wolfOut=19.101/2.*mm;   //внешний радиус вольфр призмы
       G4double wolfIn=19.1/2.*mm;    //внутр радиус
       G4double wolfLength=20*mm;	//длина призмы
       G4double wolfLengthF=2*mm;	//выступающий слой
@@ -130,7 +130,7 @@
       G4double rplasOut[numZPlanesPlas] = { plasOut, plasOut};
 
       //cell
-      G4int nofCell=3;// кол-во ячеек в главной линии
+      G4int nofCell=5;// кол-во ячеек в главной линии
       int nofCellLayers=3; //количество слоев ячеек
       int sideL=(nofCell+1)/2. ;
       int numZPlanesCell=2;
@@ -151,7 +151,7 @@
       G4double padStep=1*cm;
       int nofPadY=4;
       G4double padOutStep=2*cm;
-      G4double nofPadX= nofCell*2*wolfOut/padSizeX-1;
+      G4double nofPadX=( nofCell/2+1)*2*wolfOut/padSizeX-1;
       G4double nofPadZ=nofCellLayers*fullWolfLengthF/padSizeZ-1;
       //silicon
    /*   int numZPlanesSilic=6;
@@ -378,6 +378,10 @@
       G4ThreeVector Tm(0,0,0);
       G4RotationMatrix Rm1;
       Tr=G4Transform3D(Rm1,Tm);
+      assemblyPlate->MakeImprint(worldLV, Tr);
+      G4ThreeVector Tm1(-10*cm,0,0);
+      G4RotationMatrix Rm2;
+      Tr=G4Transform3D(Rm1,Tm1);
       assemblyPlate->MakeImprint(worldLV, Tr);
       worldLV->SetVisAttributes(G4VisAttributes::Invisible);
 
