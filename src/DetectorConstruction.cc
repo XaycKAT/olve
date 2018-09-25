@@ -130,8 +130,8 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     G4double *rplasOut = new G4double[numZPlanesPlas]{ plasOut, plasOut};
 
     //cell
-    G4int nofCell=5;// кол-во ячеек в главной линии
-    int nofCellLayers=5; //количество слоев ячеек
+    G4int nofCell=7;// кол-во ячеек в главной линии
+    int nofCellLayers=8; //количество слоев ячеек
     int sideL=(nofCell+1)/2 ;
     int numZPlanesCell=2;
     G4double cellOut=wolfOut; G4double cellIn=0;
@@ -343,7 +343,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     G4RotationMatrix Rm1;
     Tr=G4Transform3D(Rm1,Tm);
     assemblyPlate->MakeImprint(worldLV, Tr);
-    Tm={putPlatesX,-putPlatesY,-putPlatesZ};
+    Tm={putPlatesX,-putPlatesY-((nofPadY-1)*(padThick+padStep)),-putPlatesZ};
     Tr=G4Transform3D(Rm1,Tm);
     assemblyPlate->MakeImprint(worldLV, Tr);
 
