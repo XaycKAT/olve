@@ -43,17 +43,16 @@ class EventAction : public G4UserEventAction, public DetectorConstruction
     
   //  void AddWolf(G4double de, G4double dl);
     void AddPlas(G4double de, int dl);
-                     
+    void AddSilic(G4String de, int dl);
     void SetPrintModulo(G4int value);
  
 };
 
 // inline functions
 
-/*inline void EventAction::AddWolf(G4double de, G4double dl) {
-  fEnergyWolf += de; 
-  fTrackLWolf += dl;
-}*/
+inline void EventAction::AddSilic(G4String de, int dl) {
+
+}
 
 inline void EventAction::AddPlas(G4double de, int dl) {
 

@@ -68,7 +68,7 @@ void EventAction::EndOfEventAction(const G4Event* evt)
     {
         std::runtime_error("Can't open output file");
     }
-    cout<<"size: "<<PlasEnergySize<<endl;
+    cout<<"num of Cells: "<<PlasEnergySize<<endl;
     filespec << "\n---> Begin of event: " << eventID << endl;
     for(int i = 0; i < PlasEnergySize ; i++)
     {

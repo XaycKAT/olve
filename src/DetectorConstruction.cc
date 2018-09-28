@@ -37,6 +37,7 @@
 
 #include <math.h>
 #include <vector>
+#include <array>
 using namespace std;
 
 
@@ -45,6 +46,7 @@ DetectorConstruction::DetectorConstruction()
     : G4VUserDetectorConstruction(),
       fWolfPV(0),
       fPlasPV(0),
+      fSilicPV(0),
       fMessenger(0),
       fMagField(0),
       fCheckOverlaps(true)
@@ -146,8 +148,8 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     G4double centerCells=(nofCell-1)*plasOut;
 
     //Pad Up & Bottom
-    G4double padSizeX=10*mm; //размер одного пада
-    G4double padSizeZ=10*mm;
+    G4double padSizeX=20*mm; //размер одного пада
+    G4double padSizeZ=20*mm;
     G4double padThick=2*mm;
     G4double padStep=1*cm;  //отступ между плитами падов
     int nofPadY=4;      // количестов плит
@@ -199,14 +201,14 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
             = new G4LogicalVolume(
                 world,           // its solid
                 defaultMaterial,  // its material
-                "World");         // its name
+                "WorldLV");         // its name
 
     G4VPhysicalVolume* worldPV
             = new G4PVPlacement(
                 0,                // no rotation
                 G4ThreeVector(),  // at (0,0,0)
                 worldLV,          // its logical volume
-                "World",          // its name
+                "WorldPV",          // its name
                 0,                // its mother  volume
                 false,            // no boolean operation
                 0,                // copy number
@@ -226,7 +228,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
             = new G4LogicalVolume(
                 cell,           // its cell
                 defaultMaterial,  // its material
-                "Cell");         // its name
+                "CellLV");         // its name
 
 
 
@@ -239,13 +241,13 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
             = new G4Polyhedra("plastic",
                               phiStart,phiTotal, numSide, numZPlanesPlas,  zPlanePlas, rplasIn,rplasOut );
 
-    G4LogicalVolume *plasLV = new G4LogicalVolume(plastic,plasticMaterial,"plastic");
+    G4LogicalVolume *plasLV = new G4LogicalVolume(plastic,plasticMaterial,"plasLV");
 
     fPlasPV = new G4PVPlacement(
                 zRot,                // no rotation
                 G4ThreeVector(0, 0., 0),  // at (0,0,0)
                 plasLV,          // its logical volume
-                "plastic",    // its name
+                "plasPV",    // its name
                 cellLV,          // its mother  volume
                 false,            // no boolean operation
                 0,                // copy number
@@ -265,7 +267,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
             = new G4LogicalVolume(
                 sWolf,        // its solid
                 wolfMaterial, // its materialM_PI/6.*rad
-                "sWolf");          // its name
+                "WolfLV");          // its name
 
 
     fWolfPV
@@ -273,7 +275,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
                 zRot,                // no rotation
                 G4ThreeVector(0, 0., 0), // its position
                 swolfLV,       // its logical volume
-                "sWolf",           // its name
+                "WolfPV",           // its name
                 cellLV,          // its mother  volume
                 false,            // no boolean operation
                 0,                // copy number
@@ -284,7 +286,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     G4AssemblyVolume* assemblyCell = new G4AssemblyVolume();
     // Rotation and translation of a plate inside the assembly
     G4RotationMatrix Ra;
-    G4ThreeVector Ta;
+    G4ThreeVector Tm;
     G4Transform3D Tr;
     // Rotation of the assembly inside the world
     G4RotationMatrix Rm;
@@ -308,10 +310,10 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
                 assemblyCell->MakeImprint( worldLV, Tr );
                 file << check <<'\t'<<setprecision(4)<< Tm <<endl;
                 check++;
+
             }
         }
     }
-
 
     cout<<check<<endl;
     sizeDet=check;
@@ -329,10 +331,17 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
                 siPad,           // its solid
                 siliconMat,  // its material
                 "siPadLV");         // its name
-
+    fSilicPV
+            = new G4PVPlacement(
+                zRot,                // no rotation
+                G4ThreeVector(0, 0., 0), // its position
+                siPadLV,       // its logical volume
+                "WolfPV",           // its name
+                siPlateLV,          // its mother  volume
+                false,            // no boolean operation
+                0,                // copy number
+                fCheckOverlaps);  // checking overlaps
     G4AssemblyVolume* assemblyPlate = new G4AssemblyVolume();
-
-
 
     for( int j=0; j < nofPadY; j++)
     {
@@ -351,7 +360,49 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
             }
         }
     }
-    G4ThreeVector Tm(putPlatesX,putPlatesY,-putPlatesZ);    //верхние пады
+    G4AssemblyVolume* assemblyPlateB = new G4AssemblyVolume();
+
+    int nofPads = nofPadY*nofPadBX*nofPadBZ;
+    vector<G4ThreeVector>   positionPlates(nofPads);
+    int num=0;
+    for( int j = 0; j < nofPadY; j++)
+    {
+        for(  int i = 0; i < nofPadBX; i++ )
+        {
+            for( int k = 0; k < nofPadBZ; k++)
+            {
+                G4ThreeVector Tm(i*padSizeX,j*padStep,k*padSizeZ );
+                G4RotationMatrix* zRot = new G4RotationMatrix;
+                zRot->rotateZ(M_PI/2.*rad);
+                Rm=zRot->invert();
+                Tr = G4Transform3D(Rm,Tm);
+                assemblyPlateB->AddPlacedVolume( siPadLV, Tr );
+                G4ThreeVector Tm1=Rm*Tm;
+                positionPlates[num]=Tm;
+                num++;
+            }
+        }
+    }
+
+    Tm={putPlatesBX,putPlatesBY,-padOutStep-padThick/2.}; // пады с заднего  торца
+    G4RotationMatrix* xRot = new G4RotationMatrix;
+    xRot->rotateX(M_PI/2.*rad);
+    Rm=xRot->invert();
+    Tr = G4Transform3D(Rm,Tm);
+    assemblyPlateB->MakeImprint(worldLV, Tr);
+
+    file.open("sample.dat");
+    for(int i=0; i < nofPads;i++)
+    {
+        G4ThreeVector Tm1=positionPlates[i]+Tm;
+        Tm1=Rm*Tm1;
+        file<< Tm1<<endl;
+    }
+    file.close();
+    Tm={putPlatesBX,putPlatesBY,putPlatesBZ};   // пады с лицевого торца
+    Tr = G4Transform3D(Rm,Tm);
+    assemblyPlateB->MakeImprint(worldLV, Tr);
+    Tm={putPlatesX,putPlatesY,-putPlatesZ};    //верхние пады
     G4RotationMatrix Rm1;
     Tr=G4Transform3D(Rm1,Tm);
     assemblyPlate->MakeImprint(worldLV, Tr);
@@ -394,35 +445,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     }
 
 
-    G4AssemblyVolume* assemblyPlateB = new G4AssemblyVolume();
 
-    for( int j = 0; j < nofPadY; j++)
-    {
-
-        for(  int i = 0; i < nofPadBX; i++ )
-        {
-            for( int k = 0; k < nofPadBZ; k++)
-            {
-                G4ThreeVector Tm(i*padSizeX,j*padStep,k*padSizeZ );
-                G4RotationMatrix* zRot = new G4RotationMatrix;
-                zRot->rotateZ(M_PI/2.*rad);
-                Rm=zRot->invert();
-                Tr = G4Transform3D(Rm,Tm);
-                assemblyPlateB->AddPlacedVolume( siPadLV, Tr );
-
-            }
-        }
-    }
-    Tm={putPlatesBX,putPlatesBY,-padOutStep-padThick/2.}; // пады с заднего  торца
-    G4RotationMatrix* xRot = new G4RotationMatrix;
-    xRot->rotateX(M_PI/2.*rad);
-    Rm=xRot->invert();
-    Tr = G4Transform3D(Rm,Tm);
-    assemblyPlateB->MakeImprint(worldLV, Tr);
-
-    Tm={putPlatesBX,putPlatesBY,putPlatesBZ};   // пады с лицевого торца
-    Tr = G4Transform3D(Rm,Tm);
-    assemblyPlateB->MakeImprint(worldLV, Tr);
 
 
     worldLV->SetVisAttributes(G4VisAttributes::Invisible);

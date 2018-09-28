@@ -38,7 +38,6 @@ class DetectorConstruction;
 class G4ParticleGun;
 class G4Event;
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
  
 class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 {
@@ -54,7 +53,6 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
     DetectorConstruction* myDetector;
 };
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 #endif
 

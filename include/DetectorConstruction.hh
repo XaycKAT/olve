@@ -36,7 +36,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     
     G4VPhysicalVolume* fWolfPV; // the wolfram physical volume
     G4VPhysicalVolume* fPlasPV;      // the plastic physical volume
-    
+    G4VPhysicalVolume* fSilicPV;
     G4bool  fCheckOverlaps; // option to activate checking of volumes overlaps
   public:
     DetectorConstruction();
@@ -58,7 +58,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     //
     const G4VPhysicalVolume* GetWolfPV() const;
     const G4VPhysicalVolume* GetPlasPV() const;
-     
+    const G4VPhysicalVolume* GetSilicPV() const;
 
 };
 
@@ -71,6 +71,8 @@ inline const G4VPhysicalVolume* DetectorConstruction::GetWolfPV() const {
 inline const G4VPhysicalVolume* DetectorConstruction::GetPlasPV() const { 
   return fPlasPV; 
 }
-
+inline const G4VPhysicalVolume* DetectorConstruction::GetSilicPV() const {
+  return fSilicPV;
+}
   
 #endif
