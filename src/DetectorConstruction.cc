@@ -88,12 +88,13 @@ void DetectorConstruction::DefineMaterials()
 
 
     // Vacuum
-    new G4Material("Galactic", z=1., a=1.01*g/mole,density= universe_mean_density,
+    new G4Material("Galactic", 1., 1.01*g/mole,density= universe_mean_density,
                    kStateGas, 2.73*kelvin, 3.e-18*pascal);
     a = 28.09*g/mole;
-    G4Element* elSi = new G4Element("elSi", "Si", 14., a);
-    G4Material* Sci = new G4Material("silicon", density, 2);
-    Sci->AddElement(elSi, 9);
+    z=14.;
+    density=2,33*g/cm3;
+    new G4Material("silicon", z, a,density);
+
     //G4cout << *(G4Material::GetMaterialTable()) << G4endl;
 }
 
@@ -149,7 +150,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     G4double padSizeZ=10*mm;
     G4double padThick=2*mm;
     G4double padStep=1*cm;  //отступ между плитами падов
-    int nofPadY=3;      // количестов плит
+    int nofPadY=1;      // количестов плит
     G4double padOutStep=3*cm;   //отступ от призмы
     int nofPadX=static_cast<int>((nofCell/2.+1)*2*wolfOut/(padSizeX)-nofCell%2+1); //кол-во падов по Х
     int nofPadZ=static_cast<int>(nofCellLayers*fullWolfLengthF/padSizeZ+1);
@@ -158,9 +159,10 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     G4double putPlatesZ=(nofPadZ*padSizeZ - fullWolfLengthF*nofCellLayers)/2.-padSizeZ/2.;
 
     //Pad Border
-    int nofPadB=static_cast<int>(nofCell*2*wolfOut/padSizeX+1);
-    G4double putPlatesBX=centerCells+(1-nofPadB)*padSizeX/2;
-    G4double putPlatesBY=-(nofPadB-1)*padSizeX/2.;
+    int nofPadBX=static_cast<int>(nofCell*2*wolfOut/padSizeX+1);
+    int nofPadBZ=static_cast<int>(nofCell*2*wolfOut/padSizeZ+1);
+    G4double putPlatesBX=centerCells+(1-nofPadBX)*padSizeX/2;
+    G4double putPlatesBY=-(nofPadBZ-1)*padSizeZ/2.;
     G4double putPlatesBZ=nofCellLayers*fullWolfLengthF+padOutStep+(nofPadY-1)*(padThick+padStep);
 
     //Pad Diagonlex
@@ -177,7 +179,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     G4Material* defaultMaterial = G4Material::GetMaterial("Galactic");
     G4Material* wolfMaterial = G4Material::GetMaterial("wolfram");
     G4Material* plasticMaterial = G4Material::GetMaterial("G4_PLASTIC_SC_VINYLTOLUENE");
-    G4Material* siliconMat = G4Material::GetMaterial("G4_PLASTIC_SC_VINYLTOLUENE");
+    G4Material* siliconMat = G4Material::GetMaterial("silicon");
 
     if ( ! defaultMaterial || ! wolfMaterial || ! plasticMaterial ) {
         G4ExceptionDescription msg;
@@ -320,12 +322,12 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     G4LogicalVolume* siPlateLV=new G4LogicalVolume(siPlate, siliconMat, "siPlateLV");
 
     G4Box* siPad= new G4Box("siPad",           // its name
-                            padThick/2., padSizeX/2., padSizeX/2.); // its size
+                            padThick/2., padSizeX/2., padSizeZ/2.); // its size
 
     G4LogicalVolume* siPadLV
             = new G4LogicalVolume(
                 siPad,           // its solid
-                defaultMaterial,  // its material
+                siliconMat,  // its material
                 "siPadLV");         // its name
 
     G4AssemblyVolume* assemblyPlate = new G4AssemblyVolume();
@@ -336,7 +338,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
 
         for(  int i = 0; i < nofPadX; i++ )
         {
-            for( int k=0; k < nofPadZ; k++)
+            for( int k=0; k < nofPadY; k++)
             {
                 G4ThreeVector Tm( i*padSizeX,j*padStep,k*padSizeZ);
                 G4RotationMatrix* zRot = new G4RotationMatrix;
@@ -395,9 +397,9 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     for( int j = 0; j < nofPadY; j++)
     {
 
-        for(  int i = 0; i < nofPadB; i++ )
+        for(  int i = 0; i < nofPadBX; i++ )
         {
-            for( int k = 0; k < nofPadB; k++)
+            for( int k = 0; k < nofPadBZ; k++)
             {
                 G4ThreeVector Tm(i*padSizeX,j*padStep,k*padSizeZ );
                 G4RotationMatrix* zRot = new G4RotationMatrix;
@@ -409,14 +411,14 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
             }
         }
     }
-    Tm={putPlatesBX,putPlatesBY,-padOutStep-padThick/2.}; // пады с лицевого торца
+    Tm={putPlatesBX,putPlatesBY,-padOutStep-padThick/2.}; // пады с заднего  торца
     G4RotationMatrix* xRot = new G4RotationMatrix;
     xRot->rotateX(M_PI/2.*rad);
     Rm=xRot->invert();
     Tr = G4Transform3D(Rm,Tm);
-    assemblyPlateB->MakeImprint(worldLV, Tr);
+    //assemblyPlateB->MakeImprint(worldLV, Tr);
 
-    Tm={putPlatesBX,putPlatesBY,putPlatesBZ};   // пады с заднего торца
+    Tm={putPlatesBX,putPlatesBY,putPlatesBZ};   // пады с лицевого торца
     Tr = G4Transform3D(Rm,Tm);
     assemblyPlateB->MakeImprint(worldLV, Tr);
 

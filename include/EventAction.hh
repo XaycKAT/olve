@@ -35,6 +35,7 @@ class EventAction : public G4UserEventAction, public DetectorConstruction
     EventAction();
     void SetSize ( int sizeDet );
     G4double *plasEnergy = nullptr;
+    G4double *silicEnergy = nullptr;
     virtual ~EventAction();
 
     virtual void  BeginOfEventAction(const G4Event* event);

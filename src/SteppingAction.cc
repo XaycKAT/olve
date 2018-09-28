@@ -53,9 +53,7 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
   G4String VolName= step->GetTrack()->GetVolume()->GetName();
   double charge=step->GetTrack()->GetDefinition()->GetPDGCharge();
 
-  std::cout<<motherCopyNo<<'\t'<<VolName<<'\t'<<setprecision(2)<<worldPosition<<'\t'<<"Energy:"<<edep<<'\t'<<"Charge:"<<charge<<endl;
-  const G4Event* evt;
-  G4int eventID = evt->GetEventID();
+  std::cout<<motherCopyNo<<'\t'<<VolName<<'\t'<<setprecision(3)<<worldPosition<<'\t'<<"Energy:"<<edep<<'\t'<<"Charge:"<<charge<<endl;
 		
 
   if (volume == fDetConstruction->GetPlasPV()) {
