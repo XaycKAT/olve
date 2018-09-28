@@ -20,7 +20,7 @@ PrimaryGeneratorAction::PrimaryGeneratorAction(DetectorConstruction* myDC):myDet
     G4ParticleDefinition* particle = particleTable->FindParticle("p");
   
     particleGun->SetParticleDefinition(G4Proton::ProtonDefinition());
-	particleGun->SetParticleMomentumDirection(G4ThreeVector(0.,0.,-1.));
+    particleGun->SetParticleMomentumDirection(G4ThreeVector(0.,0.,-1.));
     particleGun->SetParticlePosition(G4ThreeVector(0*cm, 0*cm, 35*cm));
 	particleGun->SetParticleEnergy(130*GeV);
 }

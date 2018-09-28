@@ -133,8 +133,8 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     G4double *rplasOut = new G4double[numZPlanesPlas]{ plasOut, plasOut};
 
     //cell
-    G4int nofCell=1;// кол-во ячеек в главной линии
-    int nofCellLayers=1; //количество слоев ячеек
+    G4int nofCell=5;// кол-во ячеек в главной линии
+    int nofCellLayers=5; //количество слоев ячеек
     int sideL=(nofCell+1)/2 ;
     int numZPlanesCell=2;
     G4double cellOut=wolfOut; G4double cellIn=0;
@@ -275,7 +275,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
                 zRot,                // no rotation
                 G4ThreeVector(0, 0., 0), // its position
                 swolfLV,       // its logical volume
-                "WolfPV",           // its name
+                "sWolfPV",           // its name
                 cellLV,          // its mother  volume
                 false,            // no boolean operation
                 0,                // copy number
@@ -336,7 +336,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
                 zRot,                // no rotation
                 G4ThreeVector(0, 0., 0), // its position
                 siPadLV,       // its logical volume
-                "WolfPV",           // its name
+                "silicPV",           // its name
                 siPlateLV,          // its mother  volume
                 false,            // no boolean operation
                 0,                // copy number
@@ -362,9 +362,6 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     }
     G4AssemblyVolume* assemblyPlateB = new G4AssemblyVolume();
 
-    int nofPads = nofPadY*nofPadBX*nofPadBZ;
-    vector<G4ThreeVector>   positionPlates(nofPads);
-    int num=0;
     for( int j = 0; j < nofPadY; j++)
     {
         for(  int i = 0; i < nofPadBX; i++ )
@@ -377,9 +374,6 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
                 Rm=zRot->invert();
                 Tr = G4Transform3D(Rm,Tm);
                 assemblyPlateB->AddPlacedVolume( siPadLV, Tr );
-                G4ThreeVector Tm1=Rm*Tm;
-                positionPlates[num]=Tm;
-                num++;
             }
         }
     }
@@ -391,21 +385,19 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     Tr = G4Transform3D(Rm,Tm);
     assemblyPlateB->MakeImprint(worldLV, Tr);
 
-    file.open("sample.dat");
-    for(int i=0; i < nofPads;i++)
-    {
-        G4ThreeVector Tm1=positionPlates[i]+Tm;
-        Tm1=Rm*Tm1;
-        file<< Tm1<<endl;
-    }
-    file.close();
+    file.open("positionPlates.dat");
+    file<<"---> back plates: "<<endl;
+
+
     Tm={putPlatesBX,putPlatesBY,putPlatesBZ};   // пады с лицевого торца
     Tr = G4Transform3D(Rm,Tm);
     assemblyPlateB->MakeImprint(worldLV, Tr);
+
     Tm={putPlatesX,putPlatesY,-putPlatesZ};    //верхние пады
     G4RotationMatrix Rm1;
     Tr=G4Transform3D(Rm1,Tm);
     assemblyPlate->MakeImprint(worldLV, Tr);
+
 
     Tm={putPlatesX,-putPlatesY-((nofPadY-1)*(padThick+padStep)),-putPlatesZ};   //нижние пады
     Tr=G4Transform3D(Rm1,Tm);
@@ -434,6 +426,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
         Rm1=zt->invert();
         Tr=G4Transform3D(Rm1,Tm);
         assemblyPlate->MakeImprint(worldLV, Tr);
+
     }
     {
         Tm={putPlatesDX4,putPlatesDY2,-putPlatesZ};   //пады сверху справа
@@ -443,9 +436,27 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
         Tr=G4Transform3D(Rm1,Tm);
         assemblyPlate->MakeImprint(worldLV, Tr);
     }
+    auto it = assemblyPlateB->GetVolumesIterator();
+    int size = assemblyPlateB->TotalImprintedVolumes();
+    for (int i = 0; i < size; it++, ++i)
+    {
+    auto &volume = *it;
+    G4RotationMatrix r=*(*it)->GetObjectRotation();
+    G4ThreeVector t=(*it)->GetTranslation();
+    G4ThreeVector s=r*t;
+    file <<(*it)->GetName()<<'\t'<<t<<endl;
+    }
 
-
-
+    it = assemblyPlate->GetVolumesIterator();
+    size = assemblyPlate->TotalImprintedVolumes();
+   for (int i = 0; i < size; it++, ++i)
+   {
+   auto &volume = *it;
+   G4RotationMatrix r=*(*it)->GetObjectRotation();
+   G4ThreeVector t=(*it)->GetObjectTranslation();
+   G4ThreeVector s=r*t;
+   file <<(*it)->GetName()<<'\t'<<t<<endl;
+   }
 
 
     worldLV->SetVisAttributes(G4VisAttributes::Invisible);
