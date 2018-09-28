@@ -16,12 +16,12 @@ PrimaryGeneratorAction::PrimaryGeneratorAction(DetectorConstruction* myDC):myDet
 	G4int n_particle = 1;
 	particleGun = new G4ParticleGun(n_particle);
 
-	//G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
-	//G4ParticleDefinition* particle = particleTable->FindParticle("p");
+    G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
+    G4ParticleDefinition* particle = particleTable->FindParticle("p");
   
-	particleGun->SetParticleDefinition(G4Proton::ProtonDefinition());
+    particleGun->SetParticleDefinition(G4Proton::ProtonDefinition());
 	particleGun->SetParticleMomentumDirection(G4ThreeVector(0.,0.,-1.));
-	particleGun->SetParticlePosition(G4ThreeVector(2*cm, 2*cm, 35*cm));
+    particleGun->SetParticlePosition(G4ThreeVector(0*cm, 0*cm, 35*cm));
 	particleGun->SetParticleEnergy(130*GeV);
 }
 

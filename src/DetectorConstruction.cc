@@ -131,8 +131,8 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     G4double *rplasOut = new G4double[numZPlanesPlas]{ plasOut, plasOut};
 
     //cell
-    G4int nofCell=5;// кол-во ячеек в главной линии
-    int nofCellLayers=2; //количество слоев ячеек
+    G4int nofCell=1;// кол-во ячеек в главной линии
+    int nofCellLayers=1; //количество слоев ячеек
     int sideL=(nofCell+1)/2 ;
     int numZPlanesCell=2;
     G4double cellOut=wolfOut; G4double cellIn=0;
@@ -150,7 +150,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     G4double padSizeZ=10*mm;
     G4double padThick=2*mm;
     G4double padStep=1*cm;  //отступ между плитами падов
-    int nofPadY=1;      // количестов плит
+    int nofPadY=4;      // количестов плит
     G4double padOutStep=3*cm;   //отступ от призмы
     int nofPadX=static_cast<int>((nofCell/2.+1)*2*wolfOut/(padSizeX)-nofCell%2+1); //кол-во падов по Х
     int nofPadZ=static_cast<int>(nofCellLayers*fullWolfLengthF/padSizeZ+1);
@@ -294,7 +294,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
 
     int check=0;
     // создание массива ячеек в форме правильной призмы
-    ofstream file("position.dat");
+    ofstream file("positioncell.dat");
 
     for(  int j = 0; j < nofCellLayers; j++ )
     {
@@ -315,7 +315,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
 
     cout<<check<<endl;
     sizeDet=check;
-
+    file.close();
 
 
     G4Box* siPlate=new G4Box("siPlate", 300*cm,300*cm,300*cm);
@@ -333,12 +333,13 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     G4AssemblyVolume* assemblyPlate = new G4AssemblyVolume();
 
 
+
     for( int j=0; j < nofPadY; j++)
     {
 
         for(  int i = 0; i < nofPadX; i++ )
         {
-            for( int k=0; k < nofPadY; k++)
+            for( int k=0; k < nofPadZ; k++)
             {
                 G4ThreeVector Tm( i*padSizeX,j*padStep,k*padSizeZ);
                 G4RotationMatrix* zRot = new G4RotationMatrix;
@@ -346,6 +347,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
                 Rm=zRot->invert();
                 Tr = G4Transform3D(Rm,Tm);
                 assemblyPlate->AddPlacedVolume( siPadLV, Tr );
+
             }
         }
     }
@@ -359,7 +361,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     assemblyPlate->MakeImprint(worldLV, Tr);
 
     {
-        Tm={-putPlatesDX1,putPlatesDY1,0};  // пады сверху слева
+        Tm={-putPlatesDX1,putPlatesDY1,-putPlatesZ};  // пады сверху слева
         G4RotationMatrix* zRot = new G4RotationMatrix;
         zRot->rotateZ(-M_PI/3.*rad);
         Rm1=zRot->invert();
@@ -367,7 +369,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
         assemblyPlate->MakeImprint(worldLV, Tr);
     }
     {
-        Tm={putPlatesDX2,-putPlatesDY1,0};  //пады снизу справа
+        Tm={putPlatesDX2,-putPlatesDY1,-putPlatesZ};  //пады снизу справа
         G4RotationMatrix* zt = new G4RotationMatrix;
         zt->rotateZ(2*M_PI/3.*rad);
         Rm1=zt->invert();
@@ -375,7 +377,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
         assemblyPlate->MakeImprint(worldLV, Tr);
     }
     {
-        Tm={-putPlatesDX3,-putPlatesDY2,0}; //пады снизу слева
+        Tm={-putPlatesDX3,-putPlatesDY2,-putPlatesZ}; //пады снизу слева
         G4RotationMatrix* zt = new G4RotationMatrix;
         zt->rotateZ(M_PI/3.*rad);
         Rm1=zt->invert();
@@ -383,7 +385,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
         assemblyPlate->MakeImprint(worldLV, Tr);
     }
     {
-        Tm={putPlatesDX4,putPlatesDY2,0};   //пады сверху справа
+        Tm={putPlatesDX4,putPlatesDY2,-putPlatesZ};   //пады сверху справа
         G4RotationMatrix* zt = new G4RotationMatrix;
         zt->rotateZ(-2*M_PI/3.*rad);
         Rm1=zt->invert();
@@ -416,7 +418,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     xRot->rotateX(M_PI/2.*rad);
     Rm=xRot->invert();
     Tr = G4Transform3D(Rm,Tm);
-    //assemblyPlateB->MakeImprint(worldLV, Tr);
+    assemblyPlateB->MakeImprint(worldLV, Tr);
 
     Tm={putPlatesBX,putPlatesBY,putPlatesBZ};   // пады с лицевого торца
     Tr = G4Transform3D(Rm,Tm);

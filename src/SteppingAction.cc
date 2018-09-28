@@ -34,9 +34,9 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
 	G4StepPoint* preStepPoint = step->GetPreStepPoint();
 	G4TouchableHandle theTouchable = preStepPoint->GetTouchableHandle();
 	G4int copyNo = theTouchable->GetCopyNumber();
-	G4int depth= theTouchable->GetHistoryDepth();
-	if ( depth == 2 ) depth = 1;
-	G4int motherCopyNo = theTouchable->GetCopyNumber(depth); 
+    G4int depth= theTouchable->GetHistoryDepth();
+    if ( depth == 2 ) depth = 1;
+    G4int motherCopyNo = theTouchable->GetCopyNumber(depth);
 	G4ThreeVector worldPosition = preStepPoint->GetPosition();
 	G4ThreeVector localPosition = theTouchable->GetHistory()->GetTopTransform().TransformPoint(worldPosition);
   
