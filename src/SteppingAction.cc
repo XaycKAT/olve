@@ -47,12 +47,6 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
 
     G4double edep = step->GetTotalEnergyDeposit();
 
-    // step length
-    /*G4double stepLength = 0.;
-  if ( step->GetTrack()->GetDefinition()->GetPDGCharge() != 0. ) {
-    stepLength = step->GetStepLength();
-  }*/
-
     G4String VolName= step->GetTrack()->GetVolume()->GetName();
     double charge=step->GetTrack()->GetDefinition()->GetPDGCharge();
 
@@ -66,9 +60,6 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
     if ( volume == fDetConstruction->GetSilicPV() ) {
         fEventAction->AddSilic(VolName,edep);
     }
-    /*
-  if ( volume == fDetConstruction->GetPlasPV() ) {
-    fEventAction->AddPlas(edep,stepLength);
-  }*/
+
 }
 

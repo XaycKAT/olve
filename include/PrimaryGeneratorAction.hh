@@ -31,6 +31,7 @@
 #define PrimaryGeneratorAction_h 1
 #include "G4SystemOfUnits.hh"
 #include "G4PhysicalConstants.hh"
+#include "G4GeneralParticleSource.hh"
 
 #include "G4VUserPrimaryGeneratorAction.hh"
 
@@ -49,7 +50,8 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
     void GeneratePrimaries(G4Event*);
 
   private:
-    G4ParticleGun* particleGun;
+    G4GeneralParticleSource* particleGun;
+    //G4ParticleGun particleGun;
     DetectorConstruction* myDetector;
 };
 

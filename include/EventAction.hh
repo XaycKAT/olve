@@ -8,6 +8,7 @@
 #include <vector>
 #include "G4SystemOfUnits.hh"
 #include "G4PhysicalConstants.hh"
+#include "map"
 
 using namespace std;
 class RunAction;
@@ -35,28 +36,35 @@ class EventAction : public G4UserEventAction, public DetectorConstruction
     EventAction();
     void SetSize ( int sizeDet );
     G4double *plasEnergy = nullptr;
-    G4double *silicEnergy = nullptr;
+    map <G4String,G4double> mapSiPads;
     virtual ~EventAction();
 
     virtual void  BeginOfEventAction(const G4Event* event);
     virtual void    EndOfEventAction(const G4Event* event);
     
-  //  void AddWolf(G4double de, G4double dl);
-    void AddPlas(G4double de, int dl);
-    void AddSilic(G4String de, int dl);
+    void AddPlas(G4double de, int num);
+    void AddSilic(G4String name, G4double de);
     void SetPrintModulo(G4int value);
  
 };
 
-// inline functions
 
-inline void EventAction::AddSilic(G4String de, int dl) {
+inline void EventAction::AddSilic(G4String name, G4double de) {
+    auto it = mapSiPads.find(name);
+    if(it == mapSiPads.end())
+    {
+        mapSiPads.insert(pair<G4String,G4double>(name,de));
+    }
+    else
+    {
+        it->second += de;
+    }
 
 }
 
-inline void EventAction::AddPlas(G4double de, int dl) {
+inline void EventAction::AddPlas(G4double de, int num) {
 
-  plasEnergy[dl]+=de;
+  plasEnergy[num]+=de;
 
 }
 

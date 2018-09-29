@@ -34,6 +34,10 @@
 
 #include "G4PhysicalConstants.hh"
 #include "G4SystemOfUnits.hh"
+#include "G4Polyline.hh"
+#include "G4Point3D.hh"
+#include "G4String.hh"
+#include "G4Circle.hh"
 
 #include <math.h>
 #include <vector>
@@ -94,7 +98,7 @@ void DetectorConstruction::DefineMaterials()
                    kStateGas, 2.73*kelvin, 3.e-18*pascal);
     a = 28.09*g/mole;
     z=14.;
-    density=2,33*g/cm3;
+    density=2.33*g/cm3;
     new G4Material("silicon", z, a,density);
 
     //G4cout << *(G4Material::GetMaterialTable()) << G4endl;
@@ -114,7 +118,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     G4double numSide = 6;	//шестигран призма
     //wolfram
     int numZPlanesWolf=6;
-    G4double wolfOut=19.101/2.*mm;   //внешний радиус вольфр призмы (вписанная окружность)
+    G4double wolfOut=19.11/2.*mm;   //внешний радиус вольфр призмы (вписанная окружность)
     G4double wolfIn=19.1/2.*mm;    //внутр радиус
     G4double wolfLength=20*mm;	//длина призмы
     G4double wolfLengthF=2*mm;	//выступающий слой
@@ -134,7 +138,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
 
     //cell
     G4int nofCell=5;// кол-во ячеек в главной линии
-    int nofCellLayers=5; //количество слоев ячеек
+    int nofCellLayers=2; //количество слоев ячеек
     int sideL=(nofCell+1)/2 ;
     int numZPlanesCell=2;
     G4double cellOut=wolfOut; G4double cellIn=0;
@@ -304,8 +308,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
         {
             for(  int i = 0; i < nofCell-abs(k); i++ )
             {
-                // Translation of the assembly inside the world
-                G4ThreeVector Tm( i*(0 + 2*wolfOut) + abs(k)*wolfOut, k*3*wolfOut/sqrt(3),j*(0 + fullWolfLengthF));
+                Tm={ i*(0 + 2*wolfOut) + abs(k)*wolfOut, k*3*wolfOut/sqrt(3),j*(0 + fullWolfLengthF)};
                 Tr = G4Transform3D(Rm,Tm);
                 assemblyCell->MakeImprint( worldLV, Tr );
                 file << check <<'\t'<<setprecision(4)<< Tm <<endl;
@@ -319,6 +322,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     sizeDet=check;
     file.close();
 
+    //пады
 
     G4Box* siPlate=new G4Box("siPlate", 300*cm,300*cm,300*cm);
     G4LogicalVolume* siPlateLV=new G4LogicalVolume(siPlate, siliconMat, "siPlateLV");
@@ -336,7 +340,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
                 zRot,                // no rotation
                 G4ThreeVector(0, 0., 0), // its position
                 siPadLV,       // its logical volume
-                "silicPV",           // its name
+                "fsilicPV",           // its name
                 siPlateLV,          // its mother  volume
                 false,            // no boolean operation
                 0,                // copy number
@@ -350,8 +354,8 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
         {
             for( int k=0; k < nofPadZ; k++)
             {
-                G4ThreeVector Tm( i*padSizeX,j*padStep,k*padSizeZ);
-                G4RotationMatrix* zRot = new G4RotationMatrix;
+                Tm={ i*padSizeX,j*padStep,k*padSizeZ};
+                zRot = new G4RotationMatrix;
                 zRot->rotateZ(M_PI/2.*rad);
                 Rm=zRot->invert();
                 Tr = G4Transform3D(Rm,Tm);
@@ -368,8 +372,8 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
         {
             for( int k = 0; k < nofPadBZ; k++)
             {
-                G4ThreeVector Tm(i*padSizeX,j*padStep,k*padSizeZ );
-                G4RotationMatrix* zRot = new G4RotationMatrix;
+                Tm={i*padSizeX,j*padStep,k*padSizeZ };
+                zRot = new G4RotationMatrix;
                 zRot->rotateZ(M_PI/2.*rad);
                 Rm=zRot->invert();
                 Tr = G4Transform3D(Rm,Tm);
@@ -385,8 +389,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     Tr = G4Transform3D(Rm,Tm);
     assemblyPlateB->MakeImprint(worldLV, Tr);
 
-    file.open("positionPlates.dat");
-    file<<"---> back plates: "<<endl;
+
 
 
     Tm={putPlatesBX,putPlatesBY,putPlatesBZ};   // пады с лицевого торца
@@ -403,73 +406,69 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     Tr=G4Transform3D(Rm1,Tm);
     assemblyPlate->MakeImprint(worldLV, Tr);
 
-    {
-        Tm={-putPlatesDX1,putPlatesDY1,-putPlatesZ};  // пады сверху слева
-        G4RotationMatrix* zRot = new G4RotationMatrix;
-        zRot->rotateZ(-M_PI/3.*rad);
-        Rm1=zRot->invert();
-        Tr=G4Transform3D(Rm1,Tm);
-        assemblyPlate->MakeImprint(worldLV, Tr);
-    }
-    {
-        Tm={putPlatesDX2,-putPlatesDY1,-putPlatesZ};  //пады снизу справа
-        G4RotationMatrix* zt = new G4RotationMatrix;
-        zt->rotateZ(2*M_PI/3.*rad);
-        Rm1=zt->invert();
-        Tr=G4Transform3D(Rm1,Tm);
-        assemblyPlate->MakeImprint(worldLV, Tr);
-    }
-    {
-        Tm={-putPlatesDX3,-putPlatesDY2,-putPlatesZ}; //пады снизу слева
-        G4RotationMatrix* zt = new G4RotationMatrix;
-        zt->rotateZ(M_PI/3.*rad);
-        Rm1=zt->invert();
-        Tr=G4Transform3D(Rm1,Tm);
-        assemblyPlate->MakeImprint(worldLV, Tr);
+    Tm={-putPlatesDX1,putPlatesDY1,-putPlatesZ};  // пады сверху слева
+    zRot = new G4RotationMatrix;
+    zRot->rotateZ(-M_PI/3.*rad);
+    Rm1=zRot->invert();
+    Tr=G4Transform3D(Rm1,Tm);
+    assemblyPlate->MakeImprint(worldLV, Tr);
 
-    }
-    {
-        Tm={putPlatesDX4,putPlatesDY2,-putPlatesZ};   //пады сверху справа
-        G4RotationMatrix* zt = new G4RotationMatrix;
-        zt->rotateZ(-2*M_PI/3.*rad);
-        Rm1=zt->invert();
-        Tr=G4Transform3D(Rm1,Tm);
-        assemblyPlate->MakeImprint(worldLV, Tr);
-    }
+    Tm={putPlatesDX2,-putPlatesDY1,-putPlatesZ};  //пады снизу справа
+    zRot = new G4RotationMatrix;
+    zRot->rotateZ(2*M_PI/3.*rad);
+    Rm1=zRot->invert();
+    Tr=G4Transform3D(Rm1,Tm);
+    assemblyPlate->MakeImprint(worldLV, Tr);
+
+
+    Tm={-putPlatesDX3,-putPlatesDY2,-putPlatesZ}; //пады снизу слева
+    zRot = new G4RotationMatrix;
+    zRot->rotateZ(M_PI/3.*rad);
+    Rm1=zRot->invert();
+    Tr=G4Transform3D(Rm1,Tm);
+    assemblyPlate->MakeImprint(worldLV, Tr);
+
+
+
+    Tm={putPlatesDX4,putPlatesDY2,-putPlatesZ};   //пады сверху справа
+    zRot = new G4RotationMatrix;
+    zRot->rotateZ(-2*M_PI/3.*rad);
+    Rm1=zRot->invert();
+    Tr=G4Transform3D(Rm1,Tm);
+    assemblyPlate->MakeImprint(worldLV, Tr);
+
+    file.open("positionPlates.dat");
+    file<<"---> front & back plates: "<<endl;
     auto it = assemblyPlateB->GetVolumesIterator();
     int size = assemblyPlateB->TotalImprintedVolumes();
     for (int i = 0; i < size; it++, ++i)
     {
-    auto &volume = *it;
-    G4RotationMatrix r=*(*it)->GetObjectRotation();
-    G4ThreeVector t=(*it)->GetTranslation();
-    G4ThreeVector s=r*t;
-    file <<(*it)->GetName()<<'\t'<<t<<endl;
+        auto &volume = *it;
+        G4ThreeVector t=(*it)->GetTranslation();
+        file <<(*it)->GetName()<<'\t'<<t<<endl;
     }
+    file<<"---> border plates: "<<endl;
 
     it = assemblyPlate->GetVolumesIterator();
     size = assemblyPlate->TotalImprintedVolumes();
-   for (int i = 0; i < size; it++, ++i)
-   {
-   auto &volume = *it;
-   G4RotationMatrix r=*(*it)->GetObjectRotation();
-   G4ThreeVector t=(*it)->GetObjectTranslation();
-   G4ThreeVector s=r*t;
-   file <<(*it)->GetName()<<'\t'<<t<<endl;
-   }
+    for (int i = 0; i < size; it++, ++i)
+    {
+        auto &volume = *it;
+        G4ThreeVector t=(*it)->GetObjectTranslation();
+        file <<(*it)->GetName()<<'\t'<<t<<endl;
+    }
 
 
     worldLV->SetVisAttributes(G4VisAttributes::Invisible);
-    G4VisAttributes* plasColour= new G4VisAttributes(G4Colour(0,1.0,0));
-    G4VisAttributes* wolfColour= new G4VisAttributes(G4Colour(1, 0, 0));
-    G4VisAttributes* silicColour= new G4VisAttributes(G4Colour(0, 0, 1));
+    G4VisAttributes* plasColour= new G4VisAttributes(G4Colour(1,1,1));
+    G4VisAttributes* wolfColour= new G4VisAttributes(G4Colour(0.02, 0.542, 0.738));
+    G4VisAttributes* silicColour= new G4VisAttributes(G4Colour(0.053, 0.4, 0.05));
     plasColour->SetVisibility(true);
     wolfColour->SetVisibility(true);
     silicColour->SetVisibility(true);
     plasLV->SetVisAttributes(plasColour);
     swolfLV->SetVisAttributes(wolfColour);
-    //silicLV->SetVisAttributes(silicColour);
-
+    siPadLV->SetVisAttributes(silicColour);
 
     return worldPV;
 }

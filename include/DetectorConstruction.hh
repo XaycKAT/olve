@@ -66,7 +66,6 @@ class DetectorConstruction : public G4VUserDetectorConstruction
 
 inline const G4VPhysicalVolume* DetectorConstruction::GetWolfPV() const { 
   return fWolfPV; 
-
 }
 inline const G4VPhysicalVolume* DetectorConstruction::GetPlasPV() const { 
   return fPlasPV; 
