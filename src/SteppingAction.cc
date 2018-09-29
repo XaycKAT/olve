@@ -1,4 +1,4 @@
-﻿
+
 #include "SteppingAction.hh"
 #include "EventAction.hh"
 #include "DetectorConstruction.hh"
@@ -50,16 +50,16 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
     G4String VolName= step->GetTrack()->GetVolume()->GetName();
     double charge=step->GetTrack()->GetDefinition()->GetPDGCharge();
 
-    std::cout<<cellCopyNo<<'\t'<<copyNo<<'\t'<<VolName<<'\t'<<setprecision(2)<<worldPosition<<'\t'<<"Energy:"<<edep<<'\t'<<"Charge:"<<charge<<endl;
+    std::cout<<cellCopyNo<<'\t'<<VolName<<'\t'<<setprecision(2)<<worldPosition<<'\t'<<"Energy:"<<edep<<'\t'<<"Charge:"<<charge<<endl;
 
 
-    if (volume == fDetConstruction->GetPlasPV()) {
+    if (volume == fDetConstruction->GetPlasPV() || volume == fDetConstruction->GetSilicPV()) {
         fEventAction->AddPlas(edep,cellCopyNo);
     }
 
-    if ( volume == fDetConstruction->GetSilicPV() ) {
-        fEventAction->AddSilic(VolName,edep);
-    }
+//    if ( volume == fDetConstruction->GetSilicPV() ) {
+//        fEventAction->AddSilic(VolName,edep);
+//    }
 
 }
 

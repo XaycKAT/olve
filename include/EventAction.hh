@@ -49,18 +49,18 @@ class EventAction : public G4UserEventAction, public DetectorConstruction
 };
 
 
-inline void EventAction::AddSilic(G4String name, G4double de) {
-    auto it = mapSiPads.find(name);
-    if(it == mapSiPads.end())
-    {
-        mapSiPads.insert(pair<G4String,G4double>(name,de));
-    }
-    else
-    {
-        it->second += de;
-    }
+//inline void EventAction::AddSilic(G4String name, G4double de) {
+//    auto it = mapSiPads.find(name);
+//    if(it == mapSiPads.end())
+//    {
+//        mapSiPads.insert(pair<G4String,G4double>(name,de));
+//    }
+//    else
+//    {
+//        it->second += de;
+//    }
 
-}
+//}
 
 inline void EventAction::AddPlas(G4double de, int num) {
 

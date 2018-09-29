@@ -69,21 +69,21 @@ void EventAction::EndOfEventAction(const G4Event* evt)
         std::runtime_error("Can't open output file");
     }
     cout<<"num of Cells: "<<PlasEnergySize<<endl;
-    filespec << "\n---> Begin of event: " << eventID << endl;
+    filespec << "---> Begin of event: " << eventID << endl;
     for(int i = 0; i < PlasEnergySize ; i++)
     {
 
-        filespec  << '\t'<<i+1<< '\t'<<setprecision(3) << plasEnergy[i]<<endl;
+        filespec  << '\t'<<i<< '\t'<<setprecision(3) << plasEnergy[i]<<endl;
     }
     for(int i = 0; i < PlasEnergySize ; i++)
     {
         plasEnergy[i]=0;
     }
-    for(auto it = mapSiPads.begin(); it != mapSiPads.end(); ++it)
-    {
-        filespec << (*it).first <<'\t' << (*it).second << endl;
-    }
-    mapSiPads.clear();
+//    for(auto it = mapSiPads.begin(); it != mapSiPads.end(); ++it)
+//    {
+//        filespec << (*it).first <<'\t' << (*it).second << endl;
+//    }
+//    mapSiPads.clear();
 }  
 EventAction::~EventAction()
 {
