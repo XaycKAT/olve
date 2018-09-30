@@ -63,17 +63,18 @@ void EventAction::EndOfEventAction(const G4Event* evt)
 {
     G4int eventID = evt->GetEventID();
     if ( eventID % fPrintModulo == 0 )  {
-        G4cout << "\n---> End of event: " << eventID << G4endl;}
+        G4cout << "\n---> End of event: " << eventID << '\t'<< G4endl;}
     if (!filespec.is_open())
     {
         std::runtime_error("Can't open output file");
     }
     cout<<"num of Cells: "<<PlasEnergySize<<endl;
-    filespec << "---> Begin of event: " << eventID << endl;
+    filespec << "---> Begin of event: " << eventID <<'\t'<<setprecision(2)<<
+                "Momentum: "<<parMomentum[eventID]<<'\t'<<"Position:"<<parPosition[eventID]<< endl;
     for(int i = 0; i < PlasEnergySize ; i++)
     {
 
-        filespec  << '\t'<<i<< '\t'<<setprecision(3) << plasEnergy[i]<<endl;
+        filespec  << '\t'<<i+1<< '\t'<<setprecision(3) << plasEnergy[i]<<endl;
     }
     for(int i = 0; i < PlasEnergySize ; i++)
     {

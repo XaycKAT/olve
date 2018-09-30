@@ -311,7 +311,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
                 Tm={ i*(0 + 2*wolfOut) + abs(k)*wolfOut, k*3*wolfOut/sqrt(3),j*(0 + fullWolfLengthF)};
                 Tr = G4Transform3D(Rm,Tm);
                 assemblyCell->MakeImprint( worldLV, Tr );
-                file <<'\t'<< check <<'\t'<<setprecision(4)<< Tm <<endl;
+                file <<'\t'<< check+1 <<'\t'<<setprecision(4)<< Tm <<endl;
                 check++;
 
             }
@@ -456,9 +456,9 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     sizeDet=check;
 
     worldLV->SetVisAttributes(G4VisAttributes::Invisible);
-    G4VisAttributes* plasColour= new G4VisAttributes(G4Colour(1,1,1));
-    G4VisAttributes* wolfColour= new G4VisAttributes(G4Colour(0.02, 0.542, 0.738));
-    G4VisAttributes* silicColour= new G4VisAttributes(G4Colour(0.053, 0.4, 0.05));
+    G4VisAttributes* plasColour= new G4VisAttributes(G4Colour(0.5,0.5,0.5));
+    G4VisAttributes* wolfColour= new G4VisAttributes(G4Colour(0.6,0.6,0.6));
+    G4VisAttributes* silicColour= new G4VisAttributes(G4Colour(0,1.,0));
     plasColour->SetVisibility(true);
     wolfColour->SetVisibility(true);
     silicColour->SetVisibility(true);

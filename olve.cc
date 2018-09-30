@@ -9,6 +9,8 @@
 #include<G4UImanager.hh>
 #include<G4UIterminal.hh>
 #include<G4VisExecutive.hh>
+#include "G4UIExecutive.hh"
+
 #include<G4Material.hh>
 #include<G4UserRunAction.hh>
 #include<G4Run.hh>
@@ -56,13 +58,9 @@ int main(int argc,char** argv)
     runManager->SetUserAction(eventAction);
     SteppingAction* steppingAction  = new SteppingAction(detConstruction, eventAction);
     runManager->SetUserAction(steppingAction);
-  // visualization manager
-  G4VisManager* visManager = new G4VisExecutive;
-  visManager->Initialize();
-
-
-  // get the pointer to the User Interface manager
-  G4UImanager* UImanager = G4UImanager::GetUIpointer();
+    // visualization manager
+    G4VisManager* visManager = new G4VisExecutive;
+    visManager->Initialize();
 
 
     runManager->Initialize();
@@ -78,9 +76,12 @@ int main(int argc,char** argv)
     G4UImanager * UI = G4UImanager::GetUIpointer();
     G4UIsession * session = new G4UIterminal();
 
-    UI->ExecuteMacroFile(macros);
+    UI->ApplyCommand("/control/execute vis.mac");
+
+    UI->ApplyCommand("/control/execute gps1.mac");
+
     session->SessionStart();
-    UImanager->ApplyCommand("/control/execute gps1.mac");
+
     delete session;
     delete visManager;
     delete runManager;

@@ -49,17 +49,25 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
 
     G4String VolName= step->GetTrack()->GetVolume()->GetName();
     double charge=step->GetTrack()->GetDefinition()->GetPDGCharge();
-
-    std::cout<<cellCopyNo<<'\t'<<VolName<<'\t'<<setprecision(2)<<worldPosition<<'\t'<<"Energy:"<<edep<<'\t'<<"Charge:"<<charge<<endl;
+    const G4Track* track = step->GetTrack();
+    G4ThreeVector pMomentum;
+    G4ThreeVector pPosition;
+     if (track->GetDefinition()->GetParticleName() == "proton") {
+        pMomentum =track->GetMomentumDirection();
+        pPosition = track->GetVertexPosition();
+    }
+    std::cout<<cellCopyNo<<'\t'<<fixed<<setprecision(2)<<pMomentum<<'\t'<<pPosition<<'\t'<<VolName<<'\t'
+            <<worldPosition<<'\t'<<"E:"<<edep<<'\t'<<"C:"<<charge<<endl;
 
 
     if (volume == fDetConstruction->GetPlasPV() || volume == fDetConstruction->GetSilicPV()) {
         fEventAction->AddPlas(edep,cellCopyNo);
     }
-
-//    if ( volume == fDetConstruction->GetSilicPV() ) {
-//        fEventAction->AddSilic(VolName,edep);
-//    }
-
+    G4int preEvt = G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID();
+    G4int aftEvt=-1;
+    if(preEvt - aftEvt == 1){
+        fEventAction->AddMomentum(pMomentum,pPosition);
+    }
+    aftEvt=G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID();
 }
 

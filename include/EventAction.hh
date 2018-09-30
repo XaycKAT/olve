@@ -36,6 +36,8 @@ class EventAction : public G4UserEventAction, public DetectorConstruction
     EventAction();
     void SetSize ( int sizeDet );
     G4double *plasEnergy = nullptr;
+    vector<G4ThreeVector> parMomentum;
+    vector<G4ThreeVector> parPosition;
     map <G4String,G4double> mapSiPads;
     virtual ~EventAction();
 
@@ -43,7 +45,7 @@ class EventAction : public G4UserEventAction, public DetectorConstruction
     virtual void    EndOfEventAction(const G4Event* event);
     
     void AddPlas(G4double de, int num);
-    void AddSilic(G4String name, G4double de);
+    void AddMomentum(G4ThreeVector vec, G4ThreeVector pos);
     void SetPrintModulo(G4int value);
  
 };
@@ -67,6 +69,12 @@ inline void EventAction::AddPlas(G4double de, int num) {
   plasEnergy[num]+=de;
 
 }
+
+inline void EventAction::AddMomentum(G4ThreeVector vec, G4ThreeVector pos){
+    parMomentum.push_back(vec);
+    parPosition.push_back(pos);
+}
+
 
 inline void EventAction::SetPrintModulo(G4int value) {
   fPrintModulo = value;
