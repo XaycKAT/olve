@@ -137,8 +137,8 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     G4double *rplasOut = new G4double[numZPlanesPlas]{ plasOut, plasOut};
 
     //cell
-    G4int nofCell=3;// кол-во ячеек в главной линии
-    int nofCellLayers=1; //количество слоев ячеек
+    G4int nofCell=7;// кол-во ячеек в главной линии
+    int nofCellLayers=3; //количество слоев ячеек
     int sideL=(nofCell+1)/2 ;
     int numZPlanesCell=2;
     G4double cellOut=wolfOut; G4double cellIn=0;
@@ -152,12 +152,12 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     G4double centerCells=(nofCell-1)*plasOut;
 
     //Pad Up & Bottom
-    G4double padSizeX=20*mm; //размер одного пада
-    G4double padSizeZ=20*mm;
-    G4double padThick=2*mm;
+    G4double padSizeX=10*mm; //размер одного пада
+    G4double padSizeZ=10*mm;
+    G4double padThick=1*mm;
     G4double padStep=1*cm;  //отступ между плитами падов
     int nofPadY=4;      // количестов плит
-    G4double padOutStep=3*cm;   //отступ от призмы
+    G4double padOutStep=20*cm;   //отступ от призмы
     int nofPadX=static_cast<int>((nofCell/2.+1)*2*wolfOut/(padSizeX)-nofCell%2+1); //кол-во падов по Х
     int nofPadZ=static_cast<int>(nofCellLayers*fullWolfLengthF/padSizeZ+1);
     G4double putPlatesX=centerCells+(1-nofPadX)*padSizeX/2;
@@ -458,7 +458,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     worldLV->SetVisAttributes(G4VisAttributes::Invisible);
     G4VisAttributes* plasColour= new G4VisAttributes(G4Colour(0.5,0.5,0.5));
     G4VisAttributes* wolfColour= new G4VisAttributes(G4Colour(0.6,0.6,0.6));
-    G4VisAttributes* silicColour= new G4VisAttributes(G4Colour(0,1.,0));
+    G4VisAttributes* silicColour= new G4VisAttributes(G4Colour(0.3,0.8,0.3));
     plasColour->SetVisibility(true);
     wolfColour->SetVisibility(true);
     silicColour->SetVisibility(true);

@@ -38,7 +38,7 @@ class EventAction : public G4UserEventAction, public DetectorConstruction
     G4double *plasEnergy = nullptr;
     vector<G4ThreeVector> parMomentum;
     vector<G4ThreeVector> parPosition;
-    map <G4String,G4double> mapSiPads;
+    //map <G4String,G4double> mapSiPads;
     virtual ~EventAction();
 
     virtual void  BeginOfEventAction(const G4Event* event);
