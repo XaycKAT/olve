@@ -68,12 +68,12 @@ void EventAction::EndOfEventAction(const G4Event* evt)
     {
         std::runtime_error("Can't open output file");
     }
-    filespec << "---> Begin of event: " << eventID <<'\t'<<setprecision(2)<< fixed <<
-                "Momentum: "<<parMomentum[eventID]<<'\t'<<"Position:"<<parPosition[eventID]<< endl;
+    filespec << "#" << eventID <<setprecision(2)<< fixed <<' '<<
+                parMomentum[eventID]<<' '<<parPosition[eventID]<< endl;
     for(int i = 0; i < PlasEnergySize ; i++)
     {
         if(plasEnergy[i]!=0)
-            filespec  << '\t'<<i+1<< '\t'<<setprecision(3) << plasEnergy[i]<<endl;
+            filespec  <<i<< ' '<<setprecision(3) << plasEnergy[i]<<endl;
         else
             continue;
     }

@@ -69,7 +69,19 @@ DetectorConstruction::~DetectorConstruction()
 {
 }
 
-
+int DetectorConstruction::WriteFile(G4AssemblyVolume* av, ofstream &file, int count)
+{
+    auto it = av->GetVolumesIterator();
+    advance(it,count);
+    auto size = av->TotalImprintedVolumes();
+    for (int i = count; i < size; it++, ++i)
+    {
+        //auto &volume = *it;
+        G4ThreeVector t=(*it)->GetObjectTranslation();
+        file <<(*it)->GetCopyNo()<<'\t'<<t<<endl;
+    }
+    return size;
+}
 G4VPhysicalVolume* DetectorConstruction::Construct()
 {
     // Define materials
@@ -152,11 +164,11 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     G4double centerCells=(nofCell-1)*plasOut;
 
     //Pad Up & Bottom
-    G4double padSizeX=10*mm; //размер одного пада
-    G4double padSizeZ=10*mm;
+    G4double padSizeX=30*mm; //размер одного пада
+    G4double padSizeZ=30*mm;
     G4double padThick=1*mm;
     G4double padStep=1*cm;  //отступ между плитами падов
-    int nofPadY=4;      // количестов плит
+    int nofPadY=1;      // количестов плит
     G4double padOutStep=20*cm;   //отступ от призмы
     int nofPadX=static_cast<int>((nofCell/2.+1)*2*wolfOut/(padSizeX)-nofCell%2+1); //кол-во падов по Х
     int nofPadZ=static_cast<int>(nofCellLayers*fullWolfLengthF/padSizeZ+1);
@@ -216,7 +228,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
                 0,                // its mother  volume
                 false,            // no boolean operation
                 0,                // copy number
-                fCheckOverlaps);  // checking overlaps
+                fCheckOverlaps);  // posFileSizeing overlaps
 
 
     //
@@ -255,7 +267,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
                 cellLV,             // its mother  volume
                 false,              // no boolean operation
                 0,                  // copy number
-                fCheckOverlaps);    // checking overlaps
+                fCheckOverlaps);    // posFileSizeing overlaps
 
 
 
@@ -283,25 +295,19 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
                 cellLV,          // its mother  volume
                 false,            // no boolean operation
                 0,                // copy number
-                fCheckOverlaps);  // checking overlaps
+                fCheckOverlaps);  // posFileSizeing overlaps
 
 
-    // Define one layer as one assembly volume
     G4AssemblyVolume* assemblyCell = new G4AssemblyVolume();
-    // Rotation and translation of a plate inside the assembly
     G4RotationMatrix Ra;
     G4ThreeVector Tm;
     G4Transform3D Tr;
-    // Rotation of the assembly inside the world
     G4RotationMatrix Rm;
-
-    // Fill the assembly by the plates
     assemblyCell->AddPlacedVolume( cellLV, Tr );
 
-    int check=0;
+    int posFileSize=0;
     // создание массива ячеек в форме правильной призмы
     ofstream file("position.dat");
-    file<<"---> cells:"<<endl;
     for(  int j = 0; j < nofCellLayers; j++ )
     {
         for(  int k = -sideL+1; k < sideL; k++ )
@@ -311,8 +317,8 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
                 Tm={ i*(0 + 2*wolfOut) + abs(k)*wolfOut, k*3*wolfOut/sqrt(3),j*(0 + fullWolfLengthF)};
                 Tr = G4Transform3D(Rm,Tm);
                 assemblyCell->MakeImprint( worldLV, Tr );
-                file <<'\t'<< check+1 <<'\t'<<setprecision(4)<< Tm <<endl;
-                check++;
+                file << posFileSize+1 <<'\t'<<setprecision(4)<< Tm <<endl;
+                posFileSize++;
 
             }
         }
@@ -339,7 +345,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
                 siPlateLV,          // its mother  volume
                 false,            // no boolean operation
                 0,                // copy number
-                fCheckOverlaps);  // checking overlaps
+                fCheckOverlaps);  // posFileSizeing overlaps
 
     G4AssemblyVolume* assemblyPlate = new G4AssemblyVolume();
 
@@ -385,19 +391,30 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     Rm=xRot->invert();
     Tr = G4Transform3D(Rm,Tm);
     assemblyPlateB->MakeImprint(worldLV, Tr);
+    int count=0;
+    file<<"#0"<<endl;
+    count=WriteFile(assemblyPlateB,file,count);
 
     Tm={putPlatesBX,putPlatesBY,putPlatesBZ};   // пады с лицевого торца
     Tr = G4Transform3D(Rm,Tm);
     assemblyPlateB->MakeImprint(worldLV, Tr);
 
+    file<<"#1"<<endl;
+    count=WriteFile(assemblyPlateB,file,count);
+
     Tm={putPlatesX,putPlatesY,-putPlatesZ};    //верхние пады
     G4RotationMatrix Rm1;
     Tr=G4Transform3D(Rm1,Tm);
     assemblyPlate->MakeImprint(worldLV, Tr);
+    file<<"#2"<<endl;
+    count=0;
+    count=WriteFile(assemblyPlate,file,count);
 
     Tm={putPlatesX,-putPlatesY-((nofPadY-1)*(padThick+padStep)),-putPlatesZ};   //нижние пады
     Tr=G4Transform3D(Rm1,Tm);
     assemblyPlate->MakeImprint(worldLV, Tr);
+    file<<"#3"<<endl;
+    count=WriteFile(assemblyPlate,file,count);
 
     Tm={-putPlatesDX1,putPlatesDY1,-putPlatesZ};  // пады сверху слева
     zRot = new G4RotationMatrix;
@@ -405,6 +422,8 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     Rm1=zRot->invert();
     Tr=G4Transform3D(Rm1,Tm);
     assemblyPlate->MakeImprint(worldLV, Tr);
+    file<<"#4"<<endl;
+    count=WriteFile(assemblyPlate,file,count);
 
     Tm={putPlatesDX2,-putPlatesDY1,-putPlatesZ};  //пады снизу справа
     zRot = new G4RotationMatrix;
@@ -412,7 +431,8 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     Rm1=zRot->invert();
     Tr=G4Transform3D(Rm1,Tm);
     assemblyPlate->MakeImprint(worldLV, Tr);
-
+    file<<"#5"<<endl;
+    count=WriteFile(assemblyPlate,file,count);
 
     Tm={-putPlatesDX3,-putPlatesDY2,-putPlatesZ}; //пады снизу слева
     zRot = new G4RotationMatrix;
@@ -420,7 +440,8 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     Rm1=zRot->invert();
     Tr=G4Transform3D(Rm1,Tm);
     assemblyPlate->MakeImprint(worldLV, Tr);
-
+    file<<"#6"<<endl;
+    count=WriteFile(assemblyPlate,file,count);
 
     Tm={putPlatesDX4,putPlatesDY2,-putPlatesZ};   //пады сверху справа
     zRot = new G4RotationMatrix;
@@ -428,37 +449,18 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     Rm1=zRot->invert();
     Tr=G4Transform3D(Rm1,Tm);
     assemblyPlate->MakeImprint(worldLV, Tr);
+    file<<"#7"<<endl;
+    count=WriteFile(assemblyPlate,file,count);
 
+    posFileSize+=assemblyPlate->TotalImprintedVolumes()+assemblyPlateB->TotalImprintedVolumes();
 
-    file<<"---> front & back plates: "<<endl;
-    auto it = assemblyPlateB->GetVolumesIterator();
-    int size = assemblyPlateB->TotalImprintedVolumes();
-    check+=size;
-    for (int i = 0; i < size; it++, ++i)
-    {
-        auto &volume = *it;
-        G4ThreeVector t=(*it)->GetTranslation();
-
-        file <<'\t'<<(*it)->GetCopyNo()<<'\t'<<t<<endl;
-    }
-    file<<"---> border plates: "<<endl;
-
-    it = assemblyPlate->GetVolumesIterator();
-    size = assemblyPlate->TotalImprintedVolumes();
-    check+=size;
-    for (int i = 0; i < size; it++, ++i)
-    {
-        auto &volume = *it;
-        G4ThreeVector t=(*it)->GetObjectTranslation();
-        file <<'\t'<<(*it)->GetCopyNo()<<'\t'<<t<<endl;
-    }
     file.close();
-    sizeDet=check;
+    sizeDet=posFileSize;
 
     worldLV->SetVisAttributes(G4VisAttributes::Invisible);
     G4VisAttributes* plasColour= new G4VisAttributes(G4Colour(0.5,0.5,0.5));
     G4VisAttributes* wolfColour= new G4VisAttributes(G4Colour(0.6,0.6,0.6));
-    G4VisAttributes* silicColour= new G4VisAttributes(G4Colour(0.3,0.8,0.3));
+    G4VisAttributes* silicColour= new G4VisAttributes(G4Colour(0.4,0.8,0.4));
     plasColour->SetVisibility(true);
     wolfColour->SetVisibility(true);
     silicColour->SetVisibility(true);

@@ -56,8 +56,8 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
         pMomentum =track->GetMomentumDirection();
         pPosition = track->GetVertexPosition();
     }
-    //std::cout<<cellCopyNo<<'\t'<<fixed<<setprecision(2)<<pMomentum<<'\t'<<pPosition<<'\t'<<VolName<<'\t'
-      //      <<worldPosition<<'\t'<<"E:"<<edep<<'\t'<<"C:"<<charge<<endl;
+    //cout<<cellCopyNo<<'\t'<<copyNo<<'\t'<<fixed<<setprecision(2)<<VolName<<'\t'
+      //    <<worldPosition<<'\t'<<"E:"<<edep<<'\t'<<"C:"<<charge<<endl;
 
 
     if (volume == fDetConstruction->GetPlasPV() || volume == fDetConstruction->GetSilicPV()) {

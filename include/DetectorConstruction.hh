@@ -8,11 +8,14 @@
 #include<G4VPhysicalVolume.hh>
 #include<G4Material.hh>
 #include<G4VisAttributes.hh>
-
-
+#include<G4RotationMatrix.hh>
+#include "G4ThreeVector.hh"
 #include "G4VUserDetectorConstruction.hh"
 #include "globals.hh"
-
+#include<G4AssemblyVolume.hh>
+#include<iostream>
+#include<fstream>
+using namespace std;
 class G4Box;
 class G4VPhysicalVolume;
 class G4UniformMagField;
@@ -33,11 +36,13 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     //int sizeDet;
     G4GenericMessenger*  fMessenger; // messenger 
     G4UniformMagField*   fMagField;  // magnetic field
-    
+    G4VPhysicalVolume* fSilicPV;
+
     G4VPhysicalVolume* fWolfPV; // the wolfram physical volume
     G4VPhysicalVolume* fPlasPV;      // the plastic physical volume
-    G4VPhysicalVolume* fSilicPV;
     G4bool  fCheckOverlaps; // option to activate checking of volumes overlaps
+
+    int WriteFile(G4AssemblyVolume* ,ofstream &, int count );
   public:
     DetectorConstruction();
     
