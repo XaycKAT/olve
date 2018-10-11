@@ -1,0 +1,21 @@
+# Run initialization
+/run/initialize
+/run/setCut 0.01 mm
+
+# ISO source
+/gps/pos/type Surface
+/gps/pos/centre 0. 0. 0. cm
+/gps/ang/type cos
+/gps/pos/shape Sphere
+/gps/pos/radius 2500 mm
+/gps/ang/surfnorm true
+#/gps/ang/mintheta 10 deg
+/gps/ang/maxtheta 10 deg
+
+# Particle type
+/gps/particle proton
+
+# Monoenergetic spectrum
+/gps/energy 1 TeV
+#100 Gev, 10 Tev
+#/run/beamOn 1000

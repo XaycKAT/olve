@@ -7,9 +7,9 @@ project(olve)
 message(${Geant4_DIR})
 option(WITH_GEANT4_UIVIS "Build example with Geant4 UI and Vis drivers" ON)
 if(WITH_GEANT4_UIVIS)
-  find_package(Geant4 REQUIRED ui_all vis_all)
+    find_package(Geant4 REQUIRED ui_all vis_all)
 else()
-  find_package(Geant4 REQUIRED)
+    find_package(Geant4 REQUIRED)
 endif()
 
 #----------------------------------------------------------------------------
@@ -37,7 +37,18 @@ target_link_libraries(olve.exe ${Geant4_LIBRARIES})
 # example standalone
 #
 add_custom_target(olve DEPENDS olve.exe)
+set(olve_scripts
+  gps.mac
+  vis.mac
+  )
 
+foreach(_script ${olve_scripts})
+  configure_file(
+    ${PROJECT_SOURCE_DIR}/${_script}
+    ${PROJECT_BINARY_DIR}/${_script}
+    COPYONLY
+    )
+endforeach()
 #----------------------------------------------------------------------------
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
 #
