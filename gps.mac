@@ -16,6 +16,6 @@
 /gps/particle proton
 
 # Monoenergetic spectrum
-/gps/energy 1 TeV
+/gps/energy 100 GeV
 #100 Gev, 10 Tev
-#/run/beamOn 1000
+#/run/beamOn 100

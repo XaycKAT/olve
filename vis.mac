@@ -14,18 +14,18 @@
 #/vis/open RayTracer
 
 /vis/viewer/set/viewpointThetaPhi 0 90   deg
-/vis/viewer/zoom 1.0
+/vis/viewer/zoom 1
 
 /vis/viewer/set/lightsVector 0 0 -1
 #/vis/viewer/set/auxiliaryEdge true
 #/vis/viewer/set/lineSegmentsPerCircle 100
 
-/vis/viewer/set/style wireframe
-#/vis/viewer/set/style surface
-/vis/viewer/set/hiddenEdge 0
+#/vis/viewer/set/style wireframe
+/vis/viewer/set/style surface
+/vis/viewer/set/hiddenEdge true
 
 /vis/scene/add/trajectories
-#/vis/scene/add/axes -150 0 0  400 mm
+#/vis/scene/add/axes 0 0 0  20 mm
 
 /tracking/storeTrajectory 1
 /vis/scene/endOfEventAction accumulate

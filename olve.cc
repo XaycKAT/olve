@@ -78,7 +78,7 @@ int main(int argc,char** argv)
 
     UI->ApplyCommand("/control/execute vis.mac");
 
-    UI->ApplyCommand("/control/execute gps1.mac");
+    UI->ApplyCommand("/control/execute gps.mac");
 
     session->SessionStart();
 
