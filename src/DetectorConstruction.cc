@@ -147,8 +147,8 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     G4double *rplasOut = new G4double[numZPlanesPlas]{ plasOut, plasOut};
 
     //cell
-    G4int nofCell=17;//static_cast<int>(1600./wolfOut/2);// кол-во ячеек в главной линии
-    int nofCellLayers=7; //количество слоев ячеек
+    G4int nofCell=7;//static_cast<int>(1600./wolfOut/2);// кол-во ячеек в главной линии
+    int nofCellLayers=1; //количество слоев ячеек
     int sideL=(nofCell+1)/2 ;
     int numZPlanesCell=numZPlanesWolf;
     G4double cellOut=wolfOut;
@@ -163,15 +163,15 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     G4double centerCells=(nofCell-1)*wolfOut;
 
     //Pad Up & Bottom
-    G4double padSizeX=15*mm; //размер одного пада
-    G4double padSizeZ=15*mm;
+    G4double padSizeX=10*mm; //размер одного пада
+    G4double padSizeZ=10*mm;
     G4double padThick=0.5*mm;
     G4double padStep=3*cm;  //отступ между плитами падов
     int nofPadY=4;      // количестов плит
     G4double padOutStep=10*cm;   //отступ от призмы
-    int nofPadX=static_cast<int>((nofCell/2.+1)*2*wolfOut/padSizeX+2*(padOutStep)/sqrt(3)/padSizeX-1); //кол-во падов по Х
+    int nofPadX=static_cast<int>(nofCell*wolfOut/padSizeX+2*(padOutStep)/sqrt(3)/padSizeX); //кол-во падов по Х
     int nofPadZ=static_cast<int>((nofCellLayers*fullCellLength+2*padOutStep)/padSizeZ);
-    G4double putPlatesX=centerCells+(1-nofPadX)*padSizeX/2;
+    G4double putPlatesX=centerCells-nofPadX*padSizeX/2.+padSizeX/2.;
     G4double putPlatesY=(1+(1.5 *((nofCell+1)/2 -1)))*cellR + padOutStep;
     G4double putPlatesZ=-((nofPadZ*padSizeZ - fullCellLength*nofCellLayers)/2. - padSizeZ/2.);
     G4double putPlatesZ1=-putPlatesZ+fullCellLength*nofCellLayers;
