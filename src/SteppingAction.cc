@@ -35,7 +35,7 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
 
     G4StepPoint* preStepPoint = step->GetPreStepPoint();
     G4TouchableHandle theTouchable = preStepPoint->GetTouchableHandle();
-    G4int copyNo = theTouchable->GetCopyNumber();
+    //G4int copyNo = theTouchable->GetCopyNumber();
     G4int depth = theTouchable->GetHistoryDepth();
     if ( depth == 2 ) depth = 1;
     G4int cellCopyNo = theTouchable->GetCopyNumber(depth);
@@ -48,7 +48,7 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
     G4double edep = step->GetTotalEnergyDeposit();
 
     G4String VolName= step->GetTrack()->GetVolume()->GetName();
-    double charge=step->GetTrack()->GetDefinition()->GetPDGCharge();
+   // double charge=step->GetTrack()->GetDefinition()->GetPDGCharge();
     const G4Track* track = step->GetTrack();
     G4ThreeVector pMomentum;
     G4ThreeVector pPosition;
