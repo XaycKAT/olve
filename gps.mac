@@ -7,10 +7,10 @@
 /gps/pos/centre 0. 0. 0. cm
 /gps/ang/type cos
 /gps/pos/shape Sphere
-/gps/pos/radius 2500 mm
+/gps/pos/radius 3000 cm
 /gps/ang/surfnorm true
 #/gps/ang/mintheta 10 deg
-/gps/ang/maxtheta 10 deg
+/gps/ang/maxtheta 1.528 deg
 
 # Particle type
 /gps/particle proton
