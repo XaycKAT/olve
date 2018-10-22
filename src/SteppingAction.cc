@@ -54,8 +54,8 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
     G4ThreeVector pPosition;
     G4ThreeVector pPositionEnd;
 
-    cout<<cellCopyNo<<'\t'<<fixed<<setprecision(2)<<VolName<<'\t'<<track->GetDefinition()->GetParticleName()
-       <<'\t' <<track->GetTrackID()<<'\t' <<worldPosition<<'\t'<<"E:"<<edep<<endl;
+    //cout<<cellCopyNo<<'\t'<<fixed<<setprecision(2)<<VolName<<'\t'<<track->GetDefinition()->GetParticleName()
+    //   <<'\t' <<track->GetTrackID()<<'\t' <<worldPosition<<'\t'<<"E:"<<edep<<endl;
     if (track->GetTrackID() == 1) {
     pMomentum =track->GetMomentumDirection();
     pPosition = track->GetVertexPosition();

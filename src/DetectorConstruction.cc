@@ -42,6 +42,7 @@
 #include <math.h>
 #include <vector>
 #include <array>
+#define PI 3.14159265
 using namespace std;
 
 
@@ -147,13 +148,13 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     G4double *rplasOut = new G4double[numZPlanesPlas]{ plasOut, plasOut};
 
     //cell
-    G4int nofCell=17;//static_cast<int>(1600./wolfOut/2);// кол-во ячеек в главной линии
-    int nofCellLayers=5; //количество слоев ячеек
+    G4int nofCell=19;//static_cast<int>(1600./wolfOut/2);// кол-во ячеек в главной линии
+    int nofCellLayers=1; //количество слоев ячеек
     int sideL=(nofCell+1)/2 ;
     int numZPlanesCell=numZPlanesWolf;
     G4double cellOut=wolfOut;
     G4double cellIn=0;
-    G4double cellR=2*wolfOut/ sqrt(3); //радиус описанной окружности
+    //G4double cellR=2*wolfOut/ sqrt(3); //радиус описанной окружности
     G4double fullCellLength=plasLength+2*wolfLengthF;
     G4double *rcellIn = new G4double[numZPlanesCell]{ cellIn, cellIn};
     G4double *rcellOut = new G4double[numZPlanesCell]{ cellOut, cellOut};
@@ -169,17 +170,39 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     G4double padStep=3*cm;  //отступ между плитами падов
     int nofPadY=4;      // количестов плит
     G4double padOutStep=5*cm;   //отступ от призмы
-    int nofPadX=static_cast<int>(nofCell*wolfOut/padSizeX+2*(padOutStep)/sqrt(3)/padSizeX); //кол-во падов по Х
+    double p=2*padStep/sqrt(3)/padSizeX;
+    double ch;
+    if(p-floor(p)>0.5)
+        ch=0.01;
+    else
+        ch=-0.01;
+    while(p-floor(p)>0.01)
+    {
+        padStep+=ch;
+        p=2*padStep/sqrt(3)/padSizeX;
+    }
+    p=(nofCell*wolfOut+2*(padOutStep)/sqrt(3))/padSizeX;
+    if(p-floor(p)>0.5)
+        ch=0.01;
+    else
+        ch=-0.01;
+    while(p-floor(p)>0.01)
+    {
+        padOutStep+=ch;
+        p=(nofCell*wolfOut+2*(padOutStep)/sqrt(3))/padSizeX;
+    }
+    int nofPadX=static_cast<int>((nofCell*wolfOut+2*(padOutStep)/sqrt(3))/padSizeX); //кол-во падов по Х
     int nofPadZ=static_cast<int>((nofCellLayers*fullCellLength+2*padOutStep)/padSizeZ);
     G4double putPlatesX=centerCells-nofPadX*padSizeX/2.+padSizeX/2.;
-    G4double putPlatesY=(nofCell%2+(1.5 *(nofCell-1)/2))*cellR + padOutStep-padThick;
+    G4double putPlatesY=nofPadX*sin(PI/3.)*padSizeX;
     G4double putPlatesZ=-((nofPadZ*padSizeZ - fullCellLength*nofCellLayers)/2. - padSizeZ/2.);
     G4double putPlatesZ1=-putPlatesZ+fullCellLength*nofCellLayers;
 
     //Pad Diagonlex
-    G4double putPlatesDX1=wolfOut+padOutStep*2/sqrt(3);
+    G4double delta=nofPadX*padSizeX-wolfOut-padOutStep*2/sqrt(3)-centerCells;
+    G4double putPlatesDX1=wolfOut+padOutStep*2/sqrt(3)-padSizeX/2.*cos(PI/3.);
     G4double putPlatesDY1=padSizeX*sqrt(3)/4.;
-    G4double putPlatesDX2=(nofCell-1/2.)*wolfOut*2+padOutStep*2/sqrt(3);
+    G4double putPlatesDX2=(nofCell-1/2.)*wolfOut*2+padOutStep*2/sqrt(3)-padSizeX/2.*cos(PI/3.);
 
 
     //Pad Border
@@ -357,7 +380,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
 
     for( int j=0; j < nofPadY; j++)
     {
-        for(  int i = 0; i < nofPadX+j*(2*padStep/padSizeX/sqrt(3)); i++ )
+        for(  int i = 0; i < nofPadX+j*(2*padStep/padSizeX/sqrt(3))-1*bool(j); i++ )
         {
             for( int k=0; k < nofPadZ; k++)
             {

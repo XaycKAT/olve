@@ -54,8 +54,8 @@ int main(int argc,char** argv)
     runManager->SetUserInitialization(physicsList);
     // Set user action classes
 
-    PrimaryGeneratorAction* prim  = new PrimaryGeneratorAction(detConstruction);
-    //PrimaryGeneratorGun* prim = new PrimaryGeneratorGun(detConstruction);
+    //PrimaryGeneratorAction* prim  = new PrimaryGeneratorAction(detConstruction);
+    PrimaryGeneratorGun* prim = new PrimaryGeneratorGun(detConstruction);
     runManager->SetUserAction(prim);
     runManager->SetUserAction(new RunAction);
     EventAction* eventAction = new EventAction();
@@ -82,7 +82,7 @@ int main(int argc,char** argv)
 
     UI->ApplyCommand("/control/execute vis.mac");
 
-    UI->ApplyCommand("/control/execute gps.mac");
+    //UI->ApplyCommand("/control/execute gps.mac");
 
     session->SessionStart();
 
