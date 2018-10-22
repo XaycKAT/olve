@@ -72,13 +72,13 @@ DetectorConstruction::~DetectorConstruction()
 int DetectorConstruction::WriteFile(G4AssemblyVolume* av, ofstream &file, int count)
 {
     auto it = av->GetVolumesIterator();
-    advance(it,count);
+    //advance(it,count);
     auto size = av->TotalImprintedVolumes();
     for (unsigned int i = count; i < size; it++, ++i)
     {
         //auto &volume = *it;
         G4ThreeVector t=(*it)->GetObjectTranslation();
-        file <<(*it)->GetCopyNo()<<'\t'<<t<<endl;
+        file <<(*it)->GetCopyNo()<<'\t'<<setprecision(4)<< t<<endl;
     }
     return size;
 }
@@ -147,8 +147,8 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     G4double *rplasOut = new G4double[numZPlanesPlas]{ plasOut, plasOut};
 
     //cell
-    G4int nofCell=73;//static_cast<int>(1600./wolfOut/2);// кол-во ячеек в главной линии
-    int nofCellLayers=1; //количество слоев ячеек
+    G4int nofCell=17;//static_cast<int>(1600./wolfOut/2);// кол-во ячеек в главной линии
+    int nofCellLayers=5; //количество слоев ячеек
     int sideL=(nofCell+1)/2 ;
     int numZPlanesCell=numZPlanesWolf;
     G4double cellOut=wolfOut;
@@ -163,12 +163,12 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     G4double centerCells=(nofCell-1)*wolfOut;
 
     //Pad Up & Bottom
-    G4double padSizeX=10*mm; //размер одного пада
-    G4double padSizeZ=10*mm;
+    G4double padSizeX=20*mm; //размер одного пада
+    G4double padSizeZ=20*mm;
     G4double padThick=0.5*mm;
     G4double padStep=3*cm;  //отступ между плитами падов
     int nofPadY=4;      // количестов плит
-    G4double padOutStep=20*cm;   //отступ от призмы
+    G4double padOutStep=5*cm;   //отступ от призмы
     int nofPadX=static_cast<int>(nofCell*wolfOut/padSizeX+2*(padOutStep)/sqrt(3)/padSizeX); //кол-во падов по Х
     int nofPadZ=static_cast<int>((nofCellLayers*fullCellLength+2*padOutStep)/padSizeZ);
     G4double putPlatesX=centerCells-nofPadX*padSizeX/2.+padSizeX/2.;
@@ -188,7 +188,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     G4double putPlatesBX=centerCells+(1-nofPadBX)*padSizeX/2;
     G4double putPlatesBY=0;
     G4double putPlatesBZ=-(padOutStep-padSizeX/2);
-    G4double putPlatesBZ1=-((nofPadY-1)*(padStep)+nofCellLayers*fullCellLength+padOutStep-padSizeX/2.);
+    G4double putPlatesBZ1=((nofPadY-1)*(padStep)+nofCellLayers*fullCellLength+padOutStep-padSizeX/2.);
 
     // Get materials
     G4Material* defaultMaterial = G4Material::GetMaterial("Galactic");
@@ -313,7 +313,6 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     G4RotationMatrix Rm;
     assemblyCell->AddPlacedVolume( cellLV, Tr );
 
-    int posFileSize=0;
     // создание массива ячеек в форме правильной призмы
     ofstream file("position.dat");
     for(  int j = 0; j < nofCellLayers; j++ )
@@ -325,8 +324,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
                 Tm={ i*2*wolfOut + abs(k)*wolfOut, k*3*wolfOut/sqrt(3),j*fullCellLength};
                 Tr = G4Transform3D(Rm,Tm);
                 assemblyCell->MakeImprint( worldLV, Tr );
-                file << posFileSize+1 <<'\t'<<setprecision(4)<< Tm <<endl;
-                posFileSize++;
+                //file << posFileSize+1 <<'\t'<<setprecision(4)<< Tm <<endl;
 
             }
         }
@@ -391,17 +389,16 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
         }
     }
 
-    file<<"#plates"<<endl;
     Tm={putPlatesBX,putPlatesBY,putPlatesBZ}; // пады с заднего  торца
     G4RotationMatrix* xRot = new G4RotationMatrix;
     xRot->rotateX(M_PI/2.*rad);
     Rm=xRot->invert();
     Tr = G4Transform3D(Rm,Tm);
-   // assemblyPlateB->MakeImprint(worldLV, Tr);
+    assemblyPlateB->MakeImprint(worldLV, Tr);
 
     Tm={putPlatesBX,putPlatesBY,putPlatesBZ1};   // пады с лицевого торца
     Tr = G4Transform3D(Rm,Tm);
-    // assemblyPlateB->MakeImprint(worldLV, Tr);
+    //assemblyPlateB->MakeImprint(worldLV, Tr);
 
     Tm={putPlatesX,putPlatesY,putPlatesZ};    //верхние пады
     G4RotationMatrix Rm1;
@@ -450,10 +447,12 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     Tr=G4Transform3D(Rm1,Tm);
     assemblyPlate->MakeImprint(worldLV, Tr);
 
-
+    WriteFile(assemblyCell,file,0);
+    file<<"#plates"<<endl;
     WriteFile(assemblyPlateB,file,0);
     WriteFile(assemblyPlate,file,0);
-    posFileSize+=assemblyPlate->TotalImprintedVolumes()+assemblyPlateB->TotalImprintedVolumes();
+    int posFileSize=assemblyPlate->TotalImprintedVolumes()+assemblyPlateB->TotalImprintedVolumes()+
+            assemblyCell->TotalImprintedVolumes();
 
     file.close();
     sizeDet=posFileSize;

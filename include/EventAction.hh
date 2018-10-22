@@ -17,27 +17,30 @@ class G4GenericMessenger;
 
 class EventAction : public G4UserEventAction, public DetectorConstruction
 {
- private:
+private:
     G4GenericMessenger*  fMessenger;
     RunAction*  fRunAction;
     ofstream filespec{"spectrum.dat"};
     
-   
+
     G4double  fEnergyWolf;
     G4double  fEnergyPlas;
-    G4double  fTrackLWolf; 
+    G4double  fTrackLWolf;
     G4double  fTrackLPlas;
     G4int     fPrintModulo;
 
     int PlasEnergySize = 0;
     
-  public:
-	
+public:
+    int checkEmptyEvent=false;
     EventAction();
     void SetSize ( int sizeDet );
     G4double *plasEnergy = nullptr;
+    G4ThreeVector *silicPos = nullptr;
     vector<G4ThreeVector> parMomentum;
     vector<G4ThreeVector> parPosition;
+    vector<G4ThreeVector> parPositionEnd;
+
     //map <G4String,G4double> mapSiPads;
     virtual ~EventAction();
 
@@ -45,9 +48,10 @@ class EventAction : public G4UserEventAction, public DetectorConstruction
     virtual void    EndOfEventAction(const G4Event* event);
     
     void AddPlas(G4double de, int num);
-    void AddMomentum(G4ThreeVector vec, G4ThreeVector pos);
+    void AddSilicPos(G4ThreeVector pos,int num);
+    void AddMomentum(G4ThreeVector vec, G4ThreeVector pos, G4ThreeVector endpos);
     void SetPrintModulo(G4int value);
- 
+
 };
 
 
@@ -66,21 +70,29 @@ class EventAction : public G4UserEventAction, public DetectorConstruction
 
 inline void EventAction::AddPlas(G4double de, int num) {
 
-  plasEnergy[num]+=de;
+    plasEnergy[num]+=de;
+    if(de>0.0001)
+        checkEmptyEvent=true;
+
+}
+inline void EventAction::AddSilicPos(G4ThreeVector pos, int num){
+
+    silicPos[num]=pos;
 
 }
 
-inline void EventAction::AddMomentum(G4ThreeVector vec, G4ThreeVector pos){
+inline void EventAction::AddMomentum(G4ThreeVector vec, G4ThreeVector pos, G4ThreeVector endpos){
     parMomentum.push_back(vec);
     parPosition.push_back(pos);
+    parPositionEnd.push_back(endpos);
 }
 
 
 inline void EventAction::SetPrintModulo(G4int value) {
-  fPrintModulo = value;
+    fPrintModulo = value;
 }
-                     
+
 
 #endif
 
-    
+

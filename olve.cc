@@ -1,5 +1,6 @@
 #include "DetectorConstruction.hh"
 #include "PrimaryGeneratorAction.hh"
+#include "PrimaryGeneratorGun.hh"
 #include "RunAction.hh"
 #include "EventAction.hh"
 #include "SteppingAction.hh"
@@ -52,7 +53,10 @@ int main(int argc,char** argv)
     G4VModularPhysicsList* physicsList = new FTFP_BERT;
     runManager->SetUserInitialization(physicsList);
     // Set user action classes
-    runManager->SetUserAction(new PrimaryGeneratorAction(detConstruction));
+
+    PrimaryGeneratorAction* prim  = new PrimaryGeneratorAction(detConstruction);
+    //PrimaryGeneratorGun* prim = new PrimaryGeneratorGun(detConstruction);
+    runManager->SetUserAction(prim);
     runManager->SetUserAction(new RunAction);
     EventAction* eventAction = new EventAction();
     runManager->SetUserAction(eventAction);
