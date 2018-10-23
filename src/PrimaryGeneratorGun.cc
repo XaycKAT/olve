@@ -18,8 +18,8 @@ PrimaryGeneratorGun::PrimaryGeneratorGun(DetectorConstruction* myDC):myDetector(
     G4ParticleDefinition* particle = particleTable->FindParticle("mu+");
 
     particleGun->SetParticleDefinition(G4Proton::ProtonDefinition());
-    particleGun->SetParticleMomentumDirection(G4ThreeVector(1.,0.,0.));
-    particleGun->SetParticlePosition(G4ThreeVector(-200*cm, 0*cm, 0*cm));
+    particleGun->SetParticleMomentumDirection(G4ThreeVector(0.,-1.,0.));
+    particleGun->SetParticlePosition(G4ThreeVector(1*cm, 200*cm, 0*cm));
     particleGun->SetParticleEnergy(130*GeV);
 }
 

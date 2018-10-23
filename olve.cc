@@ -37,7 +37,7 @@ public:
   }
 };*/
 
-int main(int argc,char** argv)
+int main()
 {
 
     //G4VSteppingVerbose::SetInstance(new SteppingVerbose);
@@ -47,15 +47,12 @@ int main(int argc,char** argv)
     DetectorConstruction* detConstruction = new DetectorConstruction;
     runManager->SetUserInitialization(detConstruction);
 
-    //G4VUserPhysicsList *p = new PhysicsList;
-    //runManager->SetUserInitialization(p);
-    //runManager->SetUserInitialization(new FTFP_BERT);
     G4VModularPhysicsList* physicsList = new FTFP_BERT;
     runManager->SetUserInitialization(physicsList);
     // Set user action classes
 
-    //PrimaryGeneratorAction* prim  = new PrimaryGeneratorAction(detConstruction);
-    PrimaryGeneratorGun* prim = new PrimaryGeneratorGun(detConstruction);
+    PrimaryGeneratorAction* prim  = new PrimaryGeneratorAction(detConstruction);
+    //PrimaryGeneratorGun* prim = new PrimaryGeneratorGun(detConstruction);
     runManager->SetUserAction(prim);
     runManager->SetUserAction(new RunAction);
     EventAction* eventAction = new EventAction();
@@ -65,8 +62,6 @@ int main(int argc,char** argv)
     // visualization manager
     G4VisManager* visManager = new G4VisExecutive;
     visManager->Initialize();
-
-
     runManager->Initialize();
 
     eventAction->SetSize ( detConstruction->sizeDet );
@@ -76,14 +71,13 @@ int main(int argc,char** argv)
     //cout<< *(G4Material::GetMaterialTable()) << endl;
     //cout<<"===============================================================";
     //cout<<endl;
+    G4UIsession * session = new G4UIterminal();
 
     G4UImanager * UI = G4UImanager::GetUIpointer();
-    G4UIsession * session = new G4UIterminal();
 
     UI->ApplyCommand("/control/execute vis.mac");
 
-    //UI->ApplyCommand("/control/execute gps.mac");
-
+    UI->ApplyCommand("/control/execute gps.mac");
     session->SessionStart();
 
     delete session;

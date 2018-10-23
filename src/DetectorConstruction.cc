@@ -131,7 +131,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     G4double numSide = 6;	//шестигран призма
     //wolfram
     int numZPlanesWolf=2;
-    G4double wolfOut=25.01/2.*sqrt(3)/2.*mm;   //внешний радиус вольфр призмы (вписанная окружность)
+    G4double wolfOut=25.01/2.*sqrt(3)/2.*mm;   // радиус вольфр призмы (вписанная окружность)
     G4double wolfIn=0;   //внутр радиус
     G4double wolfLengthF=2*mm;	//выступающий слой
     G4double *rwolfIn = new G4double[numZPlanesWolf]{ wolfIn,wolfIn};
@@ -141,14 +141,15 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     //plastic
     int numZPlanesPlas=numZPlanesWolf;
     G4double plasLength=20*mm;
-    G4double *zPlanePlas = new G4double[numZPlanesPlas]{ wolfLengthF,plasLength+wolfLengthF};
     G4double plasOut=wolfOut;
     G4double plasIn=0;
     G4double *rplasIn = new G4double[numZPlanesPlas]{ plasIn, plasIn};
     G4double *rplasOut = new G4double[numZPlanesPlas]{ plasOut, plasOut};
+    G4double *zPlanePlas = new G4double[numZPlanesPlas]{ 0,plasLength};
+
 
     //cell
-    G4int nofCell=19;//static_cast<int>(1600./wolfOut/2);// кол-во ячеек в главной линии
+    G4int nofCell=13;//static_cast<int>(1600./wolfOut/2);// кол-во ячеек в главной линии
     int nofCellLayers=1; //количество слоев ячеек
     int sideL=(nofCell+1)/2 ;
     int numZPlanesCell=numZPlanesWolf;
@@ -167,9 +168,9 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     G4double padSizeX=20*mm; //размер одного пада
     G4double padSizeZ=20*mm;
     G4double padThick=0.5*mm;
-    G4double padStep=3*cm;  //отступ между плитами падов
+    G4double padStep=1*cm;  //отступ между плитами падов
     int nofPadY=4;      // количестов плит
-    G4double padOutStep=5*cm;   //отступ от призмы
+    G4double padOutStep=20*cm;   //отступ от призмы
     double p=2*padStep/sqrt(3)/padSizeX;
     double ch;
     if(p-floor(p)>0.5)
@@ -191,7 +192,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
         padOutStep+=ch;
         p=(nofCell*wolfOut+2*(padOutStep)/sqrt(3))/padSizeX;
     }
-    int nofPadX=static_cast<int>((nofCell*wolfOut+2*(padOutStep)/sqrt(3))/padSizeX); //кол-во падов по Х
+    int nofPadX=p;//static_cast<int>((nofCell*wolfOut+2*(padOutStep)/sqrt(3))/padSizeX); //кол-во падов по Х
     int nofPadZ=static_cast<int>((nofCellLayers*fullCellLength+2*padOutStep)/padSizeZ);
     G4double putPlatesX=centerCells-nofPadX*padSizeX/2.+padSizeX/2.;
     G4double putPlatesY=nofPadX*sin(PI/3.)*padSizeX;
@@ -199,19 +200,18 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     G4double putPlatesZ1=-putPlatesZ+fullCellLength*nofCellLayers;
 
     //Pad Diagonlex
-    G4double delta=nofPadX*padSizeX-wolfOut-padOutStep*2/sqrt(3)-centerCells;
     G4double putPlatesDX1=wolfOut+padOutStep*2/sqrt(3)-padSizeX/2.*cos(PI/3.);
     G4double putPlatesDY1=padSizeX*sqrt(3)/4.;
     G4double putPlatesDX2=(nofCell-1/2.)*wolfOut*2+padOutStep*2/sqrt(3)-padSizeX/2.*cos(PI/3.);
 
 
     //Pad Border
-    int nofPadBX=static_cast<int>((nofCell*2*wolfOut+padOutStep*sqrt(5))/padSizeX+3);
-    int nofPadBZ=static_cast<int>((putPlatesY*2)/padSizeZ+3);
+    int nofPadBX=static_cast<int>((nofCell*2*wolfOut+padOutStep*sqrt(5)+2*nofPadY*padStep*cos(PI/6.))/padSizeX);
+    int nofPadBZ=static_cast<int>((putPlatesY*2+2*nofPadY*padStep)/padSizeZ);
     G4double putPlatesBX=centerCells+(1-nofPadBX)*padSizeX/2;
     G4double putPlatesBY=0;
-    G4double putPlatesBZ=-(padOutStep-padSizeX/2);
-    G4double putPlatesBZ1=((nofPadY-1)*(padStep)+nofCellLayers*fullCellLength+padOutStep-padSizeX/2.);
+    G4double putPlatesBZ=nofCellLayers*fullCellLength/2.-nofPadZ*padSizeZ/2.-padThick*2;
+    G4double putPlatesBZ1=nofCellLayers*fullCellLength/2.+nofPadZ*padSizeZ/2.+padThick*2+(nofPadY-1)*(padStep);
 
     // Get materials
     G4Material* defaultMaterial = G4Material::GetMaterial("Galactic");
@@ -231,7 +231,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
 
     G4VSolid* world
             = new G4Box("World",           // its name
-                        worldSizeXY/2, worldSizeXY/2, worldSizeZ/2); // its size
+                        worldSizeXY/2., worldSizeXY/2., worldSizeZ/2.); // its size
 
     G4LogicalVolume* worldLV
             = new G4LogicalVolume(
@@ -281,7 +281,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
 
     fPlasPV = new G4PVPlacement(
                 zRot,               // no rotation
-                G4ThreeVector(0, 0., 0),  // at (0,0,0)
+                G4ThreeVector(0, 0., wolfLengthF),  // at (0,0,0)
                 plasLV,             // its logical volume
                 "plasPV",           // its name
                 cellLV,             // its mother  volume
@@ -421,7 +421,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
 
     Tm={putPlatesBX,putPlatesBY,putPlatesBZ1};   // пады с лицевого торца
     Tr = G4Transform3D(Rm,Tm);
-    //assemblyPlateB->MakeImprint(worldLV, Tr);
+    assemblyPlateB->MakeImprint(worldLV, Tr);
 
     Tm={putPlatesX,putPlatesY,putPlatesZ};    //верхние пады
     G4RotationMatrix Rm1;
@@ -482,7 +482,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
 
     worldLV->SetVisAttributes(G4VisAttributes::Invisible);
     G4VisAttributes* plasColour= new G4VisAttributes(G4Colour(1,1,1));
-    G4VisAttributes* wolfColour= new G4VisAttributes(G4Colour(0.5,0.5,0.5));
+    G4VisAttributes* wolfColour= new G4VisAttributes(G4Colour(0,1,0));
     G4VisAttributes* silicColour= new G4VisAttributes(G4Colour(1,1,0));
     plasColour->SetVisibility(true);
     wolfColour->SetVisibility(true);

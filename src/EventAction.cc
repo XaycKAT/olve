@@ -76,7 +76,7 @@ void EventAction::EndOfEventAction(const G4Event* evt)
         for(int i = 0; i < PlasEnergySize ; i++)
         {
             if(plasEnergy[i]!=0)
-                filespec  <<i<< ' '<<setprecision(3) << plasEnergy[i]<<'\t' << silicPos[i]<< endl;
+                filespec  <<i<< ' '<<setprecision(2) << plasEnergy[i]<<'\t' << silicPos[i]<< endl;
             else
                 continue;
         }

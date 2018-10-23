@@ -19,7 +19,8 @@ public:
     SteppingAction(const DetectorConstruction* detectorConstruction,
                    EventAction* eventAction);
     virtual ~SteppingAction();
-    G4int aftEvt=-1;
+    G4int pastEvt=-1;
+    bool count = true;
 
     virtual void UserSteppingAction(const G4Step* step);
     

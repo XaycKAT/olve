@@ -21,15 +21,13 @@ SteppingAction::SteppingAction(
 
 
 SteppingAction::~SteppingAction()
-{ 
+{
 }
 
 
 void SteppingAction::UserSteppingAction(const G4Step* step)
 {
-    // Collect energy and track length step by step
 
-    // get volume of the current step
     G4VPhysicalVolume* volume
             = step->GetPreStepPoint()->GetTouchableHandle()->GetVolume();
 
@@ -43,7 +41,6 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
     G4ThreeVector worldPosition = preStepPoint->GetPosition();
     G4ThreeVector localPosition = theTouchable->GetHistory()->GetTopTransform().TransformPoint(worldPosition);
 
-    // energy deposit
 
     G4double edep = step->GetTotalEnergyDeposit();
     G4String VolName= step->GetTrack()->GetVolume()->GetName();
@@ -61,17 +58,16 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
     pPosition = track->GetVertexPosition();
     pPositionEnd = track->GetPosition();
     }
-
+    G4int presentEvt = G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID();
     if (volume == fDetConstruction->GetPlasPV() || volume == fDetConstruction->GetSilicPV()) {
-        fEventAction->AddPlas(edep,cellCopyNo);
-    }
-    if (volume == fDetConstruction->GetSilicPV() && track->GetTrackID() == 1) {
+           fEventAction->AddPlas(edep,cellCopyNo);
+       }
+    if (volume == fDetConstruction->GetSilicPV() && track->GetTrackID() == 1 ) {
         fEventAction->AddSilicPos(worldPosition,cellCopyNo);
     }
-    G4int preEvt = G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID();
-    if(preEvt - aftEvt == 1){
+    if(presentEvt - pastEvt == 1){
         fEventAction->AddMomentum(pMomentum,pPosition,pPositionEnd);
     }
-    aftEvt=G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID();
+    pastEvt=G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID();
 }
 

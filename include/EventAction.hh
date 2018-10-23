@@ -32,7 +32,7 @@ private:
     int PlasEnergySize = 0;
     
 public:
-    int checkEmptyEvent=false;
+    bool checkEmptyEvent=false;
     EventAction();
     void SetSize ( int sizeDet );
     G4double *plasEnergy = nullptr;
@@ -71,7 +71,7 @@ public:
 inline void EventAction::AddPlas(G4double de, int num) {
 
     plasEnergy[num]+=de;
-    if(de>0.0001)
+    if(de>0.001)
         checkEmptyEvent=true;
 
 }
