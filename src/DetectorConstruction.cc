@@ -66,9 +66,6 @@ DetectorConstruction::DetectorConstruction()
     setMagFieldCmd.SetUnitCategory("Magnetic flux density");
 }
 
-DetectorConstruction::~DetectorConstruction()
-{
-}
 
 int DetectorConstruction::WriteFile(G4AssemblyVolume* av, ofstream &file, int count)
 {
@@ -149,8 +146,8 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
 
 
     //cell
-    G4int nofCell=13;//static_cast<int>(1600./wolfOut/2);// кол-во ячеек в главной линии
-    int nofCellLayers=1; //количество слоев ячеек
+    G4int nofCell=73;//static_cast<int>(1600./wolfOut/2);// кол-во ячеек в главной линии
+    int nofCellLayers=62; //количество слоев ячеек
     int sideL=(nofCell+1)/2 ;
     int numZPlanesCell=numZPlanesWolf;
     G4double cellOut=wolfOut;
@@ -165,8 +162,8 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     G4double centerCells=(nofCell-1)*wolfOut;
 
     //Pad Up & Bottom
-    G4double padSizeX=20*mm; //размер одного пада
-    G4double padSizeZ=20*mm;
+    G4double padSizeX=10*mm; //размер одного пада
+    G4double padSizeZ=10*mm;
     G4double padThick=0.5*mm;
     G4double padStep=1*cm;  //отступ между плитами падов
     int nofPadY=4;      // количестов плит
@@ -461,7 +458,6 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     Tr=G4Transform3D(Rm1,Tm);
     assemblyPlate->MakeImprint(worldLV, Tr);
 
-
     Tm={putPlatesDX2,putPlatesDY1,putPlatesZ1};   //пады сверху справа
     zRot = new G4RotationMatrix;
     zRot->rotateZ(-2*M_PI/3.*rad);
@@ -493,6 +489,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     cellLV->SetVisAttributes(G4VisAttributes::Invisible);
     siPlateLV->SetVisAttributes(G4VisAttributes::Invisible);
     return worldPV;
+
 }
 void DetectorConstruction::SetMagField(G4double fieldValue)
 {
@@ -516,3 +513,8 @@ void DetectorConstruction::SetMagField(G4double fieldValue)
         fieldManager->SetDetectorField(fMagField);
     }
 }
+DetectorConstruction::~DetectorConstruction()
+{
+
+}
+

@@ -1,5 +1,3 @@
-
-
 #include "EventAction.hh"
 #include "RunAction.hh"
 #include "Analysis.hh"
@@ -37,9 +35,8 @@ EventAction::EventAction()
 
 void EventAction::SetSize(int sizeDet)
 {
-    PlasEnergySize = sizeDet;
-    plasEnergy = new G4double[sizeDet]();
-    silicPos = new G4ThreeVector[sizeDet]();
+    plasEnergy.resize(sizeDet);
+    silicPos.resize(sizeDet);
 }
 
 void EventAction::BeginOfEventAction(const G4Event* evt)
@@ -51,7 +48,11 @@ void EventAction::BeginOfEventAction(const G4Event* evt)
         G4cout << "\n---> Begin of event: " << eventID << G4endl;
         //CLHEP::HepRandom::showEngineStatus();
     }
-
+    for(int i=0; i < plasEnergy.size(); i++)
+    {
+        plasEnergy[i]=0;
+        silicPos[i]={0.,0.,0.};
+    }
     // initialisation per event
     fEnergyWolf = 0.;
     fEnergyPlas = 0.;
@@ -73,17 +74,14 @@ void EventAction::EndOfEventAction(const G4Event* evt)
     {
         filespec << "#" << eventID <<setprecision(2)<< fixed <<' '<<
                     parMomentum[eventID]<<' '<<parPosition[eventID]<<' '<<parPositionEnd[eventID]<< endl;
-        for(int i = 0; i < PlasEnergySize ; i++)
+        for(int i=0; i < plasEnergy.size(); i++)
         {
             if(plasEnergy[i]!=0)
                 filespec  <<i<< ' '<<setprecision(2) << plasEnergy[i]<<'\t' << silicPos[i]<< endl;
             else
                 continue;
         }
-        for(int i = 0; i < PlasEnergySize ; i++)
-        {
-            plasEnergy[i]=0;
-        }
+
     }
     checkEmptyEvent=false;
 
@@ -91,14 +89,7 @@ void EventAction::EndOfEventAction(const G4Event* evt)
 }  
 EventAction::~EventAction()
 {
-    cout<<"num of copys: "<<PlasEnergySize<<endl;
-    if (silicPos)
-    {
-        delete[] silicPos;
-    }
-    if (plasEnergy)
-    {
-        delete[] plasEnergy;
-    }
+    cout<<"num of copies: "<<plasEnergy.size()<<endl;
+
 }
 

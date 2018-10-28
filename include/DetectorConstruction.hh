@@ -34,9 +34,10 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     // data members
     //
     //int sizeDet;
-    G4VPhysicalVolume* fSilicPV;
-    G4VPhysicalVolume* fWolfPV; // the wolfram physical volume
     G4VPhysicalVolume* fPlasPV;      // the plastic physical volume
+    G4VPhysicalVolume* fWolfPV; // the wolfram physical volume
+
+    G4VPhysicalVolume* fSilicPV;
     G4GenericMessenger*  fMessenger; // messenger 
     G4UniformMagField*   fMagField;  // magnetic field
 

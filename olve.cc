@@ -83,6 +83,5 @@ int main()
     delete session;
     delete visManager;
     delete runManager;
-
     return 0;
 }

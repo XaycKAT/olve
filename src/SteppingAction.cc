@@ -33,10 +33,9 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
 
     G4StepPoint* preStepPoint = step->GetPreStepPoint();
     G4TouchableHandle theTouchable = preStepPoint->GetTouchableHandle();
-    //G4int copyNo = theTouchable->GetCopyNumber();
     G4int depth = theTouchable->GetHistoryDepth();
     if ( depth == 2 ) depth = 1;
-    G4int cellCopyNo = theTouchable->GetCopyNumber(depth);
+    G4int copyNo = theTouchable->GetCopyNumber(depth);
     G4String name=theTouchable->GetVolume()->GetName();
     G4ThreeVector worldPosition = preStepPoint->GetPosition();
     G4ThreeVector localPosition = theTouchable->GetHistory()->GetTopTransform().TransformPoint(worldPosition);
@@ -51,8 +50,8 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
     G4ThreeVector pPosition;
     G4ThreeVector pPositionEnd;
 
-    //cout<<cellCopyNo<<'\t'<<fixed<<setprecision(2)<<VolName<<'\t'<<track->GetDefinition()->GetParticleName()
-    //   <<'\t' <<track->GetTrackID()<<'\t' <<worldPosition<<'\t'<<"E:"<<edep<<endl;
+//  cout<<copyNo<<'\t'<<fixed<<setprecision(2)<<VolName<<'\t'<<track->GetDefinition()->GetParticleName()
+//       <<'\t' <<track->GetTrackID()<<'\t' <<worldPosition<<'\t'<<"E:"<<edep<<endl;
     if (track->GetTrackID() == 1) {
     pMomentum =track->GetMomentumDirection();
     pPosition = track->GetVertexPosition();
@@ -60,10 +59,14 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
     }
     G4int presentEvt = G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID();
     if (volume == fDetConstruction->GetPlasPV() || volume == fDetConstruction->GetSilicPV()) {
-           fEventAction->AddPlas(edep,cellCopyNo);
+           fEventAction->AddPlas(edep,copyNo);
        }
-    if (volume == fDetConstruction->GetSilicPV() && track->GetTrackID() == 1 ) {
-        fEventAction->AddSilicPos(worldPosition,cellCopyNo);
+    if(presentEvt - pastEvt == 1)
+        count=true;
+    if(volume == fDetConstruction->GetPlasPV() )
+        count=false;
+    if (volume == fDetConstruction->GetSilicPV() && track->GetTrackID() == 1 && track->GetParentID() == 0 && count)  {
+        fEventAction->AddSilicPos(worldPosition,copyNo);
     }
     if(presentEvt - pastEvt == 1){
         fEventAction->AddMomentum(pMomentum,pPosition,pPositionEnd);
