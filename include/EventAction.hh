@@ -40,7 +40,6 @@ public:
     vector<G4ThreeVector> parPosition;
     vector<G4ThreeVector> parPositionEnd;
 
-    //map <G4String,G4double> mapSiPads;
     virtual ~EventAction();
 
     virtual void  BeginOfEventAction(const G4Event* event);
@@ -53,19 +52,6 @@ public:
 
 };
 
-
-//inline void EventAction::AddSilic(G4String name, G4double de) {
-//    auto it = mapSiPads.find(name);
-//    if(it == mapSiPads.end())
-//    {
-//        mapSiPads.insert(pair<G4String,G4double>(name,de));
-//    }
-//    else
-//    {
-//        it->second += de;
-//    }
-
-//}
 
 inline void EventAction::AddPlas(G4double de, int num) {
 
