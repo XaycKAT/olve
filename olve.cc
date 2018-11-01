@@ -75,7 +75,7 @@ int main()
 
     G4UImanager * UI = G4UImanager::GetUIpointer();
 
-    UI->ApplyCommand("/control/execute vis.mac");
+    //UI->ApplyCommand("/control/execute vis.mac");
 
     UI->ApplyCommand("/control/execute gps.mac");
     session->SessionStart();

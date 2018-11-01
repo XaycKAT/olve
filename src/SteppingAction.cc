@@ -3,7 +3,7 @@
 #include "EventAction.hh"
 #include "DetectorConstruction.hh"
 #include "G4Event.hh"
-
+#include "G4AssemblyVolume.hh"
 #include "G4Step.hh"
 #include "G4RunManager.hh"
 #include "G4Navigator.hh"
@@ -36,22 +36,20 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
     G4int depth = theTouchable->GetHistoryDepth();
     if ( depth == 2 ) depth = 1;
     G4int copyNo = theTouchable->GetCopyNumber(depth);
-    G4String name=theTouchable->GetVolume()->GetName();
     G4ThreeVector worldPosition = preStepPoint->GetPosition();
     G4ThreeVector localPosition = theTouchable->GetHistory()->GetTopTransform().TransformPoint(worldPosition);
-
-
     G4double edep = step->GetTotalEnergyDeposit();
     G4String VolName= step->GetTrack()->GetVolume()->GetName();
-    //double charge=step->GetTrack()->GetDefinition()->GetPDGCharge();
-
+    G4LogicalVolume* lv=theTouchable->GetVolume()->GetLogicalVolume();
+    auto logicVolname = lv->GetName();
+    auto PhysVolname = volume->GetName();
     const G4Track* track = step->GetTrack();
     G4ThreeVector pMomentum;
     G4ThreeVector pPosition;
     G4ThreeVector pPositionEnd;
 
-//  cout<<copyNo<<'\t'<<fixed<<setprecision(2)<<VolName<<'\t'<<track->GetDefinition()->GetParticleName()
-//       <<'\t' <<track->GetTrackID()<<'\t' <<worldPosition<<'\t'<<"E:"<<edep<<endl;
+    cout<<copyNo<<'\t'<<fixed<<setprecision(2)<<VolName<<'\t'<<track->GetDefinition()->GetParticleName()
+       <<'\t' <<track->GetTrackID()<<'\t' <<worldPosition<<'\t'<<"E:"<<edep<<endl;
     if (track->GetTrackID() == 1) {
     pMomentum =track->GetMomentumDirection();
     pPosition = track->GetVertexPosition();

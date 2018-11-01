@@ -1,4 +1,4 @@
-#ifndef DetectorConstruction_h
+﻿#ifndef DetectorConstruction_h
 #define DetectorConstruction_h 1
 
 #include<globals.hh>
@@ -26,14 +26,12 @@ class G4GenericMessenger;
 class DetectorConstruction : public G4VUserDetectorConstruction
 {
   private:
-    // methods
-    //
+
     void DefineMaterials();
     G4VPhysicalVolume* DefineVolumes();
-  
-    // data members
-    //
-    //int sizeDet;
+    ofstream fileModelInfo{"modelInfo.dat"};
+    ofstream filePos{"position.dat",ofstream::binary};
+
     G4VPhysicalVolume* fPlasPV;      // the plastic physical volume
     G4VPhysicalVolume* fWolfPV; // the wolfram physical volume
 
@@ -41,10 +39,10 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4GenericMessenger*  fMessenger; // messenger 
     G4UniformMagField*   fMagField;  // magnetic field
 
-
     G4bool  fCheckOverlaps; // option to activate checking of volumes overlaps
 
-    int WriteFile(G4AssemblyVolume* ,ofstream &, int count );
+    int WriteFile(G4AssemblyVolume*, int count );
+    void SetAssemblyNames(G4AssemblyVolume*, int startnum,int layerNum, vector<int> &sizeLayers);
   public:
     DetectorConstruction();
     

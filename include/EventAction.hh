@@ -20,7 +20,7 @@ class EventAction : public G4UserEventAction, public DetectorConstruction
 private:
     G4GenericMessenger*  fMessenger;
     RunAction*  fRunAction;
-    ofstream filespec{"spectrum.dat"};
+    ofstream filespec{"spectrum.dat",ofstream::binary};
     
 
     G4double  fEnergyWolf;
@@ -49,6 +49,7 @@ public:
     void AddSilicPos(G4ThreeVector pos,int num);
     void AddMomentum(G4ThreeVector vec, G4ThreeVector pos, G4ThreeVector endpos);
     void SetPrintModulo(G4int value);
+    void WriteFileVec(ofstream &,G4ThreeVector &vec);
 
 };
 
