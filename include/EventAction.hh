@@ -8,7 +8,6 @@
 #include <vector>
 #include "G4SystemOfUnits.hh"
 #include "G4PhysicalConstants.hh"
-#include "map"
 
 using namespace std;
 class RunAction;
@@ -20,7 +19,7 @@ class EventAction : public G4UserEventAction, public DetectorConstruction
 private:
     G4GenericMessenger*  fMessenger;
     RunAction*  fRunAction;
-    ofstream filespec{"spectrum.dat",ofstream::binary};
+    ofstream filespec{"/opt/kurbanov_out/spectrumTest.dat",ofstream::binary};
     
 
     G4double  fEnergyWolf;

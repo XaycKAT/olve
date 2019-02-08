@@ -8,6 +8,8 @@
 #include "G4RunManager.hh"
 #include "G4Navigator.hh"
 #include "G4TransportationManager.hh"
+#include "G4LogicalVolume.hh"
+#include "G4LogicalVolumeStore.hh"
 using namespace std;
 
 SteppingAction::SteppingAction(
@@ -40,25 +42,41 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
     G4ThreeVector localPosition = theTouchable->GetHistory()->GetTopTransform().TransformPoint(worldPosition);
     G4double edep = step->GetTotalEnergyDeposit();
     G4String VolName= step->GetTrack()->GetVolume()->GetName();
-    G4LogicalVolume* lv=theTouchable->GetVolume()->GetLogicalVolume();
-    auto logicVolname = lv->GetName();
-    auto PhysVolname = volume->GetName();
     const G4Track* track = step->GetTrack();
+
+
+ //   G4LogicalVolume* lv=theTouchable->GetVolume()->GetLogicalVolume();
+ //   lv->GetInstanceID();
+
+//    auto logicVolname = lv->GetName();
+//    auto PhysVolname = volume->GetName();
+//    G4LogicalVolumeStore* lvs = G4LogicalVolumeStore::GetInstance();
+//    lvs->GetVolume("CellLV");
+//    lvs->GetInstance();
+//    vector<G4LogicalVolume*>::const_iterator lvit;
+//    string s;
+//    for( lvit = lvs->begin(); lvit != lvs->end(); lvit++ )
+//    {
+//         s = (*lvit)->GetName();
+//    }
+
+
+
     G4ThreeVector pMomentum;
     G4ThreeVector pPosition;
     G4ThreeVector pPositionEnd;
 
-    cout<<copyNo<<'\t'<<fixed<<setprecision(2)<<VolName<<'\t'<<track->GetDefinition()->GetParticleName()
-       <<'\t' <<track->GetTrackID()<<'\t' <<worldPosition<<'\t'<<"E:"<<edep<<endl;
+//    cout<<copyNo<<'\t'<<fixed<<setprecision(2)<<VolName<<'\t'<<track->GetDefinition()->GetParticleName()
+//       <<'\t' <<track->GetTrackID()<<'\t' <<worldPosition<<'\t'<<"E:"<<edep<<endl;
     if (track->GetTrackID() == 1) {
-    pMomentum =track->GetMomentumDirection();
-    pPosition = track->GetVertexPosition();
-    pPositionEnd = track->GetPosition();
+        pMomentum =track->GetMomentumDirection();
+        pPosition = track->GetVertexPosition();
+        pPositionEnd = track->GetPosition();
     }
     G4int presentEvt = G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID();
     if (volume == fDetConstruction->GetPlasPV() || volume == fDetConstruction->GetSilicPV()) {
-           fEventAction->AddPlas(edep,copyNo);
-       }
+        fEventAction->AddPlas(edep,copyNo);
+    }
     if(presentEvt - pastEvt == 1)
         count=true;
     if(volume == fDetConstruction->GetPlasPV() )

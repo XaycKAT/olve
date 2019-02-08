@@ -4,7 +4,7 @@
 
 # ISO source
 /gps/pos/type Surface
-/gps/pos/centre 0. 0. 0. cm
+/gps/pos/centre 76.8 0. -74.4 cm
 /gps/ang/type cos
 /gps/pos/shape Sphere
 /gps/pos/radius 3000 cm
@@ -16,6 +16,6 @@
 /gps/particle proton
 
 # Monoenergetic spectrum
-/gps/energy 100 GeV
+/gps/energy 10 GeV
 #100 Gev, 10 Tev
-/run/beamOn 100
+/run/beamOn 500

@@ -84,20 +84,20 @@ void EventAction::EndOfEventAction(const G4Event* evt)
         filespec.write((char*)&eventID,sizeof (eventID));
         WriteFileVec(filespec,parMomentum[eventID]);
         WriteFileVec(filespec,parPosition[eventID]);
-
         int32_t count=0;
         for(auto edep : plasEnergy)
         {
-            if(edep != 0)
+            if(edep != 0.)
                 count++;
         }
-        filespec.write((char*)&eventID,sizeof(eventID));
+        filespec.write((char*)&count,sizeof(count));
         for(int32_t i=0; i < plasEnergy.size(); i++)
         {
             if(plasEnergy[i]!=0)
             {
                 filespec.write((char*)&i,sizeof (i));
-                filespec.write((char*)&plasEnergy[i],sizeof (plasEnergy[i]));
+                float edep = plasEnergy[i];
+                filespec.write((char*)&edep,sizeof (edep));
                 WriteFileVec(filespec,silicPos[i]);
             }
             else
@@ -111,6 +111,6 @@ void EventAction::EndOfEventAction(const G4Event* evt)
 EventAction::~EventAction()
 {
     cout<<"num of copies: "<<plasEnergy.size()<<endl;
-
+    filespec.close();
 }
 

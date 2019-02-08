@@ -29,7 +29,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
 
     void DefineMaterials();
     G4VPhysicalVolume* DefineVolumes();
-    ofstream fileModelInfo{"modelInfo.dat"};
+    //ofstream fileModelInfo{"modelInfo.dat"};
     ofstream filePos{"position.dat",ofstream::binary};
 
     G4VPhysicalVolume* fPlasPV;      // the plastic physical volume
@@ -42,7 +42,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4bool  fCheckOverlaps; // option to activate checking of volumes overlaps
 
     int WriteFile(G4AssemblyVolume*, int count );
-    void SetAssemblyNames(G4AssemblyVolume*, int startnum,int layerNum, vector<int> &sizeLayers);
+    void SetAssemblyNames(G4AssemblyVolume*, int startnum,int aNum, vector<int> &sizeLayers);
   public:
     DetectorConstruction();
     
