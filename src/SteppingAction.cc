@@ -43,8 +43,6 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
     G4double edep = step->GetTotalEnergyDeposit();
     G4String VolName= step->GetTrack()->GetVolume()->GetName();
     const G4Track* track = step->GetTrack();
-
-
  //   G4LogicalVolume* lv=theTouchable->GetVolume()->GetLogicalVolume();
  //   lv->GetInstanceID();
 
@@ -66,7 +64,7 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
     G4ThreeVector pPosition;
     G4ThreeVector pPositionEnd;
 
-//    cout<<copyNo<<'\t'<<fixed<<setprecision(2)<<VolName<<'\t'<<track->GetDefinition()->GetParticleName()
+//   cout<<copyNo<<'\t'<<fixed<<setprecision(2)<<VolName<<'\t'<<track->GetDefinition()->GetParticleName()
 //       <<'\t' <<track->GetTrackID()<<'\t' <<worldPosition<<'\t'<<"E:"<<edep<<endl;
     if (track->GetTrackID() == 1) {
         pMomentum =track->GetMomentumDirection();

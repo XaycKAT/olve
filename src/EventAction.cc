@@ -73,15 +73,21 @@ void EventAction::BeginOfEventAction(const G4Event* evt)
 void EventAction::EndOfEventAction(const G4Event* evt)
 {
     int32_t eventID = evt->GetEventID();
+    G4PrimaryVertex* primaryVertex = evt->GetPrimaryVertex();
+    G4PrimaryParticle* primaryParticle = primaryVertex->GetPrimary();
+    float primEnergy = primaryParticle->GetKineticEnergy();
+    G4cout << primEnergy << endl;
     //    if ( eventID % fPrintModulo == 0 )  {
     //        G4cout << "\n---> End of event: " << eventID << '\t'<< G4endl;}
     if (!filespec.is_open())
     {
         std::runtime_error("Can't open output file");
     }
+
     if(checkEmptyEvent)
     {
-        filespec.write((char*)&eventID,sizeof (eventID));
+        //filespec.write((char*)&eventID,sizeof (eventID));
+        filespec.write((char*)&primEnergy,sizeof (primEnergy));
         WriteFileVec(filespec,parMomentum[eventID]);
         WriteFileVec(filespec,parPosition[eventID]);
         int32_t count=0;

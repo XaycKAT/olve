@@ -77,7 +77,7 @@ int DetectorConstruction::WriteFile(G4AssemblyVolume* av, int count)
         G4ThreeVector t=(*it)->GetObjectTranslation();
         int32_t copyN =(*it)->GetCopyNo();
         filePos.write((char*)&copyN,sizeof (copyN));    //copy number
-        string s=(*it)->GetName();
+        //string s=(*it)->GetName();
         stringstream ss;
         ss<<s;
         float tempf;
@@ -161,8 +161,8 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
 {
     // Geometry parameters
 
-    G4double worldSizeXY = 3000*cm;
-    G4double worldSizeZ  = 3000*cm;
+    G4double worldSizeXY = 5000*cm;
+    G4double worldSizeZ  = 5000*cm;
 
 
     //double Pi=3.14159;
@@ -195,7 +195,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     int numZPlanesCell=numZPlanesWolf;
     G4double cellOut=wolfOut;
     G4double cellIn=0;
-    G4double cellR=2*wolfOut/ sqrt(3); //радиус описанной окружности
+    //G4double cellR=2*wolfOut/ sqrt(3); //радиус описанной окружности
     G4double fullCellLength=plasLength+2*wolfLengthF;
     G4double *rcellIn = new G4double[numZPlanesCell]{ cellIn, cellIn};
     G4double *rcellOut = new G4double[numZPlanesCell]{ cellOut, cellOut};
@@ -443,19 +443,19 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
         sizeLayersB[j]=count;
     }
 
-    Tm={putPlatesBX,putPlatesBY,putPlatesBZ}; // пады с заднего  торца
-    G4RotationMatrix* xRot = new G4RotationMatrix;
-    xRot->rotateX(M_PI/2.*rad);
-    Rm=xRot->invert();
-    Tr = G4Transform3D(Rm,Tm);
-    assemblyPlateB->MakeImprint(worldLV, Tr);
-    SetAssemblyNames(assemblyPlateB,0,2,sizeLayersB);
-    int startNum=assemblyPlateB->TotalImprintedVolumes();
+//    Tm={putPlatesBX,putPlatesBY,putPlatesBZ}; // пады с заднего  торца
+//    G4RotationMatrix* xRot = new G4RotationMatrix;
+//    xRot->rotateX(M_PI/2.*rad);
+//    Rm=xRot->invert();
+//    Tr = G4Transform3D(Rm,Tm);
+//    assemblyPlateB->MakeImprint(worldLV, Tr);
+//    SetAssemblyNames(assemblyPlateB,0,2,sizeLayersB);
+      int startNum=assemblyPlateB->TotalImprintedVolumes();
 
-    Tm={putPlatesBX,putPlatesBY,putPlatesBZ1};   // пады с лицевого торца
-    Tr = G4Transform3D(Rm,Tm);
-    assemblyPlateB->MakeImprint(worldLV, Tr);
-    SetAssemblyNames(assemblyPlateB, startNum,3,sizeLayersB);
+//    Tm={putPlatesBX,putPlatesBY,putPlatesBZ1};   // пады с лицевого торца
+//    Tr = G4Transform3D(Rm,Tm);
+//    assemblyPlateB->MakeImprint(worldLV, Tr);
+//    SetAssemblyNames(assemblyPlateB, startNum,3,sizeLayersB);
 
     for( int j=0; j < nofPadY; j++)
     {
@@ -536,14 +536,14 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     assemblyPlate->MakeImprint(worldLV, Tr);
     SetAssemblyNames(assemblyPlate,startNum,9,sizeLayers);
 
-    //WriteFile(assemblyCell,0);
-    //WriteFile(assemblyPlateB,0);
-    //WriteFile(assemblyPlate,0);
+//    WriteFile(assemblyCell,0);
+//    WriteFile(assemblyPlateB,0);
+//    WriteFile(assemblyPlate,0);
     int posFileSize=assemblyPlate->TotalImprintedVolumes()+assemblyPlateB->TotalImprintedVolumes()+
             assemblyCell->TotalImprintedVolumes();
     sizeDet=posFileSize;
-    int l = assemblyPlate->TotalImprintedVolumes();
-    int k = assemblyPlateB->TotalImprintedVolumes();
+//    int l = assemblyPlate->TotalImprintedVolumes();
+//    int k = assemblyPlateB->TotalImprintedVolumes();
     worldLV->SetVisAttributes(G4VisAttributes::Invisible);
     G4VisAttributes* plasColour= new G4VisAttributes(G4Colour(1,1,1));
     G4VisAttributes* wolfColour= new G4VisAttributes(G4Colour(0,1,0));

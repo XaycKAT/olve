@@ -19,7 +19,7 @@ class EventAction : public G4UserEventAction, public DetectorConstruction
 private:
     G4GenericMessenger*  fMessenger;
     RunAction*  fRunAction;
-    ofstream filespec{"/opt/kurbanov_out/spectrumTest.dat",ofstream::binary};
+    ofstream filespec{"spectrum.dat",ofstream::binary};
     
 
     G4double  fEnergyWolf;

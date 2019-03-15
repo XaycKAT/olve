@@ -77,7 +77,7 @@ int main()
 
     //UI->ApplyCommand("/control/execute vis.mac");
 
-    UI->ApplyCommand("/control/execute gpstest.mac");
+    UI->ApplyCommand("/control/execute gps.mac");
     session->SessionStart();
 
     delete session;

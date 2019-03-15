@@ -15,7 +15,7 @@ PrimaryGeneratorGun::PrimaryGeneratorGun(DetectorConstruction* myDC):myDetector(
     particleGun = new G4ParticleGun(n_particle);
 
     G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
-    G4ParticleDefinition* particle = particleTable->FindParticle("mu+");
+    G4ParticleDefinition* particle = particleTable->FindParticle("He3");
     particleGun->SetParticleDefinition(particle);
     //particleGun->SetParticleDefinition(G4Proton::ProtonDefinition());
     particleGun->SetParticleMomentumDirection(G4ThreeVector(0.,-1.,0.));
