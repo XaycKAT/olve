@@ -14,11 +14,12 @@
 
 # Particle type
 /gps/particle proton
-#/gps/ion 6 12
+#/gps/ion 26 56
 # Monoenergetic spectrum
-/gps/ene/type Pow
-/gps/ene/min 100 GeV
-/gps/ene/max 100 TeV
-/gps/ene/alpha -1
+/gps/energy 100 GeV
+#/gps/ene/type Pow
+#/gps/ene/min 100 GeV
+#/gps/ene/max 100 TeV
+#/gps/ene/alpha -1
 #100 Gev, 10 Tev
-/run/beamOn 20
+/run/beamOn 250

@@ -13,7 +13,7 @@
 #/vis/open HepRepFile
 #/vis/open RayTracer
 
-/vis/viewer/set/viewpointThetaPhi 30 50   deg
+/vis/viewer/set/viewpointThetaPhi 30 60   deg
 /vis/viewer/zoom 1.0
 
 /vis/viewer/set/lightsVector 0 0 -1
@@ -30,5 +30,5 @@
 /tracking/storeTrajectory 1
 /vis/scene/endOfEventAction accumulate
 #/vis/viewer/flush
-#/run/beamOn 30
+/run/beamOn 30
 

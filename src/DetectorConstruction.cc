@@ -77,7 +77,7 @@ int DetectorConstruction::WriteFile(G4AssemblyVolume* av, int count)
         G4ThreeVector t=(*it)->GetObjectTranslation();
         int32_t copyN =(*it)->GetCopyNo();
         filePos.write((char*)&copyN,sizeof (copyN));    //copy number
-        //string s=(*it)->GetName();
+        string s=(*it)->GetName();
         stringstream ss;
         ss<<s;
         float tempf;
@@ -161,8 +161,8 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
 {
     // Geometry parameters
 
-    G4double worldSizeXY = 5000*cm;
-    G4double worldSizeZ  = 5000*cm;
+    G4double worldSizeXY = 10000*cm;
+    G4double worldSizeZ  = 10000*cm;
 
 
     //double Pi=3.14159;
@@ -204,10 +204,10 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     zRot->rotateZ(M_PI/6.*rad);
     G4double centerCells=(nofCell-1)*wolfOut;
 
-//    fileModelInfo<<"#Info of Cells geometry:"<<endl<<"Outer radius:"<<cellR<<endl<<"Inner radius:"
-//                <<wolfOut<<endl<<"Full Length:"<<fullCellLength<<endl<<"Wolfram thickness:"
-//               <<wolfLengthF<<endl<<"Number of Cells on the main axis:"<<nofCell<<endl
-//              <<"Number of layers:"<<nofCellLayers<<endl;
+    //    fileModelInfo<<"#Info of Cells geometry:"<<endl<<"Outer radius:"<<cellR<<endl<<"Inner radius:"
+    //                <<wolfOut<<endl<<"Full Length:"<<fullCellLength<<endl<<"Wolfram thickness:"
+    //               <<wolfLengthF<<endl<<"Number of Cells on the main axis:"<<nofCell<<endl
+    //              <<"Number of layers:"<<nofCellLayers<<endl;
 
     //Pad Up & Bottom
     G4double padSizeX=10*mm; //размер одного пада
@@ -215,7 +215,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     G4double padThick=0.5*mm;
     G4double padStep=0.5*cm;  //отступ между плитами падов
     int nofPadY=4;      // количестов плит
-    G4double padOutStep=20*cm;   //отступ от призмы
+    G4double padOutStep=10*cm;   //отступ от призмы
     double p=2*padStep/sqrt(3)/padSizeX;
     double ch=0.01;
     while(p-floor(p)>0.01)
@@ -296,7 +296,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     //
     // Cell
     //
-     G4Polyhedra* cell
+    G4Polyhedra* cell
             = new G4Polyhedra("cell",
                               phiStart+M_PI/6.*rad,phiTotal, numSide, numZPlanesCell,  zPlaneCell, rcellIn,rcellOut );
 
@@ -443,19 +443,19 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
         sizeLayersB[j]=count;
     }
 
-//    Tm={putPlatesBX,putPlatesBY,putPlatesBZ}; // пады с заднего  торца
-//    G4RotationMatrix* xRot = new G4RotationMatrix;
-//    xRot->rotateX(M_PI/2.*rad);
-//    Rm=xRot->invert();
-//    Tr = G4Transform3D(Rm,Tm);
-//    assemblyPlateB->MakeImprint(worldLV, Tr);
-//    SetAssemblyNames(assemblyPlateB,0,2,sizeLayersB);
-      int startNum=assemblyPlateB->TotalImprintedVolumes();
+    Tm={putPlatesBX,putPlatesBY,putPlatesBZ}; // пады с заднего  торца
+    G4RotationMatrix* xRot = new G4RotationMatrix;
+    xRot->rotateX(M_PI/2.*rad);
+    Rm=xRot->invert();
+    Tr = G4Transform3D(Rm,Tm);
+    assemblyPlateB->MakeImprint(worldLV, Tr);
+    SetAssemblyNames(assemblyPlateB,0,2,sizeLayersB);
+    int startNum=assemblyPlateB->TotalImprintedVolumes();
 
-//    Tm={putPlatesBX,putPlatesBY,putPlatesBZ1};   // пады с лицевого торца
-//    Tr = G4Transform3D(Rm,Tm);
-//    assemblyPlateB->MakeImprint(worldLV, Tr);
-//    SetAssemblyNames(assemblyPlateB, startNum,3,sizeLayersB);
+    Tm={putPlatesBX,putPlatesBY,putPlatesBZ1};   // пады с лицевого торца
+    Tr = G4Transform3D(Rm,Tm);
+    assemblyPlateB->MakeImprint(worldLV, Tr);
+    SetAssemblyNames(assemblyPlateB, startNum,3,sizeLayersB);
 
     for( int j=0; j < nofPadY; j++)
     {
@@ -536,14 +536,14 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     assemblyPlate->MakeImprint(worldLV, Tr);
     SetAssemblyNames(assemblyPlate,startNum,9,sizeLayers);
 
-//    WriteFile(assemblyCell,0);
-//    WriteFile(assemblyPlateB,0);
-//    WriteFile(assemblyPlate,0);
+    //    WriteFile(assemblyCell,0);
+    //    WriteFile(assemblyPlateB,0);
+    //    WriteFile(assemblyPlate,0);
     int posFileSize=assemblyPlate->TotalImprintedVolumes()+assemblyPlateB->TotalImprintedVolumes()+
             assemblyCell->TotalImprintedVolumes();
     sizeDet=posFileSize;
-//    int l = assemblyPlate->TotalImprintedVolumes();
-//    int k = assemblyPlateB->TotalImprintedVolumes();
+    //    int l = assemblyPlate->TotalImprintedVolumes();
+    //    int k = assemblyPlateB->TotalImprintedVolumes();
     worldLV->SetVisAttributes(G4VisAttributes::Invisible);
     G4VisAttributes* plasColour= new G4VisAttributes(G4Colour(1,1,1));
     G4VisAttributes* wolfColour= new G4VisAttributes(G4Colour(0,1,0));

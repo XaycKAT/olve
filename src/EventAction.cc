@@ -76,7 +76,7 @@ void EventAction::EndOfEventAction(const G4Event* evt)
     G4PrimaryVertex* primaryVertex = evt->GetPrimaryVertex();
     G4PrimaryParticle* primaryParticle = primaryVertex->GetPrimary();
     float primEnergy = primaryParticle->GetKineticEnergy();
-    G4cout << primEnergy << endl;
+    //G4cout << primEnergy << endl;
     //    if ( eventID % fPrintModulo == 0 )  {
     //        G4cout << "\n---> End of event: " << eventID << '\t'<< G4endl;}
     if (!filespec.is_open())
